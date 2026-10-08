@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -i \"s#render\\('admin/#render\\('dokter/#g\" controllers/dokter/*.js && grep -rn \"admin\" controllers/dokter views/dokter || echo \"clean\"; ls -R controllers views)",
+      "Bash(sed -i \"s#\\\\.\\\\./partials/#partials/#g\" views/dashboard.ejs)",
+      "Bash(sed -i \"s#render\\('admin/dashboard'#render\\('dashboard'#\" controllers/admin/dashboardController.js)",
+      "Bash(sed -i \"s#render\\('dokter/dashboard'#render\\('dashboard'#\" controllers/dokter/dashboardController.js)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\VICTUS\\Desktop\\sistem-pakar\\controllers\\dokter"
+    ]
+  }
+}

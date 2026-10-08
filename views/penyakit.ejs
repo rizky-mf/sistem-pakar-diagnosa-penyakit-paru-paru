@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+
+<h3 class="mb-3">Informasi Penyakit Paru-Paru</h3>
+
+<div class="accordion" id="daftarPenyakit">
+  <% penyakit.forEach((p, i) => { %>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button <%= i ? 'collapsed' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#p<%= p.id %>">
+          <span class="badge bg-primary me-2"><%= p.kode %></span> <%= p.nama %>
+        </button>
+      </h2>
+      <div id="p<%= p.id %>" class="accordion-collapse collapse <%= i ? '' : 'show' %>" data-bs-parent="#daftarPenyakit">
+        <div class="accordion-body">
+          <h6>Deskripsi</h6>
+          <p><%= p.deskripsi %></p>
+          <h6>Penanganan</h6>
+          <p class="mb-0"><%= p.solusi %></p>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('partials/footer') %>

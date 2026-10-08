@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+
+<div class="p-4 p-md-5 mb-4 bg-white rounded-3 border">
+  <h1 class="display-6 fw-bold">Sistem Pakar Diagnosa Penyakit Paru-Paru</h1>
+  <p class="lead col-lg-9">
+    Aplikasi ini membantu mengenali kemungkinan penyakit paru-paru berdasarkan gejala yang Anda alami,
+    menggunakan metode <strong>Forward Chaining</strong>, yaitu penalaran dari fakta (gejala) menuju kesimpulan (penyakit).
+  </p>
+  <% if (!user) { %>
+    <a href="/register" class="btn btn-primary btn-lg"><i class="bi bi-person-plus"></i> Daftar sebagai Pasien</a>
+    <a href="/login" class="btn btn-outline-primary btn-lg">Login</a>
+  <% } else if (user.role === 'pasien') { %>
+    <a href="/diagnosa" class="btn btn-primary btn-lg"><i class="bi bi-clipboard2-pulse"></i> Mulai Diagnosa</a>
+  <% } else { %>
+    <a href="/<%= user.role %>" class="btn btn-primary btn-lg"><i class="bi bi-speedometer2"></i> Ke Panel <%= user.role === 'admin' ? 'Admin' : 'Dokter' %></a>
+  <% } %>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100 text-center"><div class="card-body">
+      <div class="fs-2 fw-bold text-primary"><%= jumlahPenyakit %></div><div class="text-muted">Penyakit</div>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 text-center"><div class="card-body">
+      <div class="fs-2 fw-bold text-primary"><%= jumlahGejala %></div><div class="text-muted">Gejala</div>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 text-center"><div class="card-body">
+      <div class="fs-2 fw-bold text-primary"><%= jumlahRule %></div><div class="text-muted">Aturan</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Cara Kerja</h5>
+    <ol class="mb-0">
+      <li>Daftar dan login sebagai pasien, lalu pilih gejala yang Anda alami.</li>
+      <li>Sistem mencocokkan gejala dengan aturan <code>IF gejala THEN penyakit</code> dalam basis pengetahuan.</li>
+      <li>Aturan yang seluruh syaratnya terpenuhi akan menghasilkan kesimpulan diagnosa beserta solusi.</li>
+    </ol>
+  </div>
+</div>
+
+<p class="text-muted small mt-3">
+  <i class="bi bi-info-circle"></i> Hasil sistem ini bukan pengganti diagnosis dokter. Segera konsultasikan ke tenaga medis untuk pemeriksaan lebih lanjut.
+</p>
+
+<%- include('partials/footer') %>

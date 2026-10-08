@@ -1,0 +1,27 @@
+body {
+  background-color: #f5f7fb;
+}
+
+.gejala-item {
+  padding: 0.35rem 0;
+}
+
+.gejala-item .form-check-label {
+  cursor: pointer;
+}
+
+.card {
+  border-radius: 0.6rem;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  .card {
+    break-inside: avoid;
+  }
+}

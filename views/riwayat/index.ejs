@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+<%- include('../partials/panel-nav') %>
+
+<h4 class="mb-3">Riwayat Diagnosa Pasien</h4>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Tanggal</th><th>Pasien</th><th>Umur</th><th>JK</th><th>Jumlah Gejala</th><th>Hasil</th><th class="text-end">Aksi</th></tr></thead>
+      <tbody>
+        <% if (!riwayat.length) { %>
+          <tr><td colspan="7" class="text-center text-muted">Belum ada data.</td></tr>
+        <% } %>
+        <% riwayat.forEach(r => { %>
+          <tr>
+            <td class="text-nowrap"><%= new Date(r.createdAt).toLocaleString('id-ID') %></td>
+            <td><%= r.nama %></td>
+            <td><%= r.umur %></td>
+            <td><%= r.jenisKelamin %></td>
+            <td><%= r.gejala.length %></td>
+            <td><%= r.hasil.diagnosa.map(d => d.nama).join(', ') || '-' %></td>
+            <td class="text-end text-nowrap">
+              <a href="<%= base %>/riwayat/<%= r.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+              <% if (user.role === 'admin') { %>
+                <form action="<%= base %>/riwayat/<%= r.id %>?_method=DELETE" method="POST" class="d-inline"
+                      onsubmit="return confirm('Hapus riwayat ini?')">
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,35 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/dokter-nav') %>
+
+<h4 class="mb-3"><%= title %></h4>
+
+<div class="card">
+  <div class="card-body">
+    <form action="<%= action %>" method="POST">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label" for="kode">Kode</label>
+          <input class="form-control" id="kode" name="kode" value="<%= item.kode || '' %>" placeholder="P09" maxlength="10" required>
+        </div>
+        <div class="col-md-9">
+          <label class="form-label" for="nama">Nama Penyakit</label>
+          <input class="form-control" id="nama" name="nama" value="<%= item.nama || '' %>" required>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="deskripsi">Deskripsi</label>
+          <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4" required><%= item.deskripsi || '' %></textarea>
+        </div>
+        <div class="col-12">
+          <label class="form-label" for="solusi">Solusi / Penanganan</label>
+          <textarea class="form-control" id="solusi" name="solusi" rows="4" required><%= item.solusi || '' %></textarea>
+        </div>
+      </div>
+      <div class="mt-3">
+        <button class="btn btn-primary" type="submit">Simpan</button>
+        <a href="/dokter/penyakit" class="btn btn-outline-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

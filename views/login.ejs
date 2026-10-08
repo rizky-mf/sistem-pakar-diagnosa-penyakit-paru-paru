@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="mb-3 text-center">Login</h4>
+        <form action="/login" method="POST">
+          <div class="mb-3">
+            <label class="form-label" for="username">Username</label>
+            <input class="form-control" id="username" name="username" required autofocus>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" id="password" name="password" type="password" required>
+          </div>
+          <button class="btn btn-primary w-100" type="submit">Masuk</button>
+        </form>
+        <p class="text-center small mt-3 mb-0">Pasien baru? <a href="/register">Daftar di sini</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

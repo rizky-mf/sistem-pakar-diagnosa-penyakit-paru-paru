@@ -1,0 +1,32 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/dokter-nav') %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Data Gejala</h4>
+  <a href="/dokter/gejala/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Kode</th><th>Nama Gejala</th><th class="text-end">Aksi</th></tr></thead>
+      <tbody>
+        <% gejala.forEach(g => { %>
+          <tr>
+            <td><span class="badge bg-secondary"><%= g.kode %></span></td>
+            <td><%= g.nama %></td>
+            <td class="text-end text-nowrap">
+              <a href="/dokter/gejala/<%= g.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+              <form action="/dokter/gejala/<%= g.id %>?_method=DELETE" method="POST" class="d-inline"
+                    onsubmit="return confirm('Hapus gejala <%= g.kode %>? Gejala ini juga akan dihapus dari semua aturan.')">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

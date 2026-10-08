@@ -1,0 +1,56 @@
+<%- include('../partials/header') %>
+
+<h3 class="mb-3">Diagnosa Penyakit Paru-Paru</h3>
+
+<% if (errors.length) { %>
+  <div class="alert alert-danger">
+    <ul class="mb-0"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form action="/diagnosa" method="POST">
+  <div class="card mb-3">
+    <div class="card-header fw-semibold">1. Data Pasien</div>
+    <div class="card-body">
+      <table class="table table-sm table-borderless mb-0 w-auto">
+        <tr><td class="text-muted pe-4">Nama</td><td><%= pasien.nama %></td></tr>
+        <tr><td class="text-muted pe-4">Umur</td><td><%= pasien.umur %> tahun</td></tr>
+        <tr><td class="text-muted pe-4">Jenis Kelamin</td><td><%= pasien.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+      <span>2. Pilih Gejala yang Dialami</span>
+      <span class="badge bg-secondary" id="jumlahDipilih">0 dipilih</span>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <% gejala.forEach(g => { %>
+          <div class="col-md-6">
+            <div class="form-check gejala-item">
+              <input class="form-check-input" type="checkbox" name="gejala" value="<%= g.kode %>" id="g<%= g.id %>"
+                <%= dipilih.includes(g.kode) ? 'checked' : '' %>>
+              <label class="form-check-label" for="g<%= g.id %>">
+                <span class="text-muted small"><%= g.kode %></span> &middot; <%= g.nama %>
+              </label>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-search"></i> Proses Diagnosa</button>
+</form>
+
+<script>
+  const boxes = document.querySelectorAll('input[name="gejala"]');
+  const label = document.getElementById('jumlahDipilih');
+  const hitung = () => { label.textContent = [...boxes].filter(b => b.checked).length + ' dipilih'; };
+  boxes.forEach(b => b.addEventListener('change', hitung));
+  hitung();
+</script>
+
+<%- include('../partials/footer') %>

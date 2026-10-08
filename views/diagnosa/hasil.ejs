@@ -1,0 +1,102 @@
+<%- include('../partials/header') %>
+<% const hasil = riwayat.hasil; %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Hasil Diagnosa</h3>
+  <div class="no-print">
+    <a href="<%= kembali %>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali</a>
+    <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Cetak</button>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <table class="table table-sm table-borderless mb-0 w-auto">
+      <tr><td class="text-muted pe-4">Nama</td><td><%= riwayat.nama %></td></tr>
+      <tr><td class="text-muted pe-4">Umur</td><td><%= riwayat.umur %> tahun</td></tr>
+      <tr><td class="text-muted pe-4">Jenis Kelamin</td><td><%= riwayat.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></td></tr>
+      <tr><td class="text-muted pe-4">Tanggal</td><td><%= new Date(riwayat.createdAt).toLocaleString('id-ID') %></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header fw-semibold">Gejala yang Dipilih (Fakta Awal)</div>
+  <ul class="list-group list-group-flush">
+    <% riwayat.gejala.forEach(g => { %>
+      <li class="list-group-item"><span class="badge bg-secondary me-2"><%= g.kode %></span><%= g.nama %></li>
+    <% }) %>
+  </ul>
+</div>
+
+<% if (hasil.diagnosa.length) { %>
+  <% hasil.diagnosa.forEach(d => { %>
+    <div class="card mb-3 border-primary">
+      <div class="card-header bg-primary text-white fw-semibold">
+        Kesimpulan: <%= d.nama %> (<%= d.kode %>)
+      </div>
+      <div class="card-body">
+        <h6>Deskripsi</h6>
+        <p><%= d.deskripsi %></p>
+        <h6>Saran Penanganan</h6>
+        <p class="mb-0"><%= d.solusi %></p>
+      </div>
+    </div>
+  <% }) %>
+<% } else { %>
+  <div class="alert alert-warning">
+    <strong>Tidak ada aturan yang terpenuhi.</strong>
+    Gejala yang dipilih belum cukup untuk menyimpulkan penyakit tertentu berdasarkan basis pengetahuan.
+    Jika keluhan berlanjut, konsultasikan ke dokter.
+  </div>
+<% } %>
+
+<% if (hasil.parsial.length) { %>
+  <div class="card mb-3">
+    <div class="card-header fw-semibold">Kemungkinan Lain (aturan belum terpenuhi sepenuhnya)</div>
+    <div class="card-body">
+      <% hasil.parsial.forEach(p => { %>
+        <div class="mb-2">
+          <div class="d-flex justify-content-between small">
+            <span><%= p.nama %> (<%= p.rule %>)</span>
+            <span><%= p.cocok %>/<%= p.total %> gejala &middot; <%= p.persen %>%</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-warning" style="width: <%= p.persen %>%"></div>
+          </div>
+        </div>
+      <% }) %>
+      <p class="text-muted small mb-0 mt-2">Bagian ini hanya informasi tambahan, bukan kesimpulan forward chaining.</p>
+    </div>
+  </div>
+<% } %>
+
+<div class="card mb-3">
+  <div class="card-header fw-semibold">Jejak Penalaran Forward Chaining (Fasilitas Penjelasan)</div>
+  <div class="card-body">
+    <% if (hasil.jejak.length) { %>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered mb-2">
+          <thead class="table-light"><tr><th>Iterasi</th><th>Aturan</th><th>Premis (IF)</th><th>Konklusi (THEN)</th></tr></thead>
+          <tbody>
+            <% hasil.jejak.forEach(j => { %>
+              <tr>
+                <td><%= j.iterasi %></td>
+                <td><%= j.rule %></td>
+                <td><code><%= j.premis.join(' AND ') %></code></td>
+                <td><code><%= j.konklusi %></code></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="mb-2">Tidak ada aturan yang dieksekusi.</p>
+    <% } %>
+    <p class="text-muted small mb-0">Inferensi selesai dalam <%= hasil.jumlahIterasi %> iterasi (berhenti ketika tidak ada fakta baru).</p>
+  </div>
+</div>
+
+<p class="text-muted small"><i class="bi bi-info-circle"></i> Hasil ini bukan pengganti diagnosis dokter.</p>
+
+<%- include('../partials/footer') %>

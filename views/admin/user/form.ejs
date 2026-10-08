@@ -1,0 +1,44 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/admin-nav') %>
+
+<h4 class="mb-3"><%= title %></h4>
+
+<% const isEdit = !!item.id; %>
+<div class="card">
+  <div class="card-body">
+    <form action="<%= action %>" method="POST">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="nama">Nama</label>
+          <input class="form-control" id="nama" name="nama" value="<%= item.nama || '' %>" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="username">Username</label>
+          <input class="form-control" id="username" name="username" value="<%= item.username || '' %>" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-control" id="password" name="password" type="password" minlength="6" <%= isEdit ? '' : 'required' %>>
+          <% if (isEdit) { %><div class="form-text">Kosongkan jika tidak ingin mengganti password.</div><% } %>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="role">Role</label>
+          <% if (item.role === 'pasien' || item.id === user.id) { %>
+            <input class="form-control text-capitalize" value="<%= item.role %>" disabled>
+          <% } else { %>
+            <select class="form-select" id="role" name="role">
+              <option value="dokter" <%= item.role === 'dokter' ? 'selected' : '' %>>Dokter</option>
+              <option value="admin" <%= item.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+          <% } %>
+        </div>
+      </div>
+      <div class="mt-3">
+        <button class="btn btn-primary" type="submit">Simpan</button>
+        <a href="/admin/user" class="btn btn-outline-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

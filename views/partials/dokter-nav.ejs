@@ -1,0 +1,7 @@
+<ul class="nav nav-pills mb-4 no-print">
+  <li class="nav-item"><a class="nav-link <%= currentPath === '/dokter' || currentPath === '/dokter/' ? 'active' : '' %>" href="/dokter"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+  <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/dokter/penyakit') ? 'active' : '' %>" href="/dokter/penyakit"><i class="bi bi-virus"></i> Penyakit</a></li>
+  <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/dokter/gejala') ? 'active' : '' %>" href="/dokter/gejala"><i class="bi bi-list-check"></i> Gejala</a></li>
+  <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/dokter/rule') ? 'active' : '' %>" href="/dokter/rule"><i class="bi bi-diagram-3"></i> Aturan</a></li>
+  <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/dokter/riwayat') ? 'active' : '' %>" href="/dokter/riwayat"><i class="bi bi-clock-history"></i> Riwayat Diagnosa</a></li>
+</ul>

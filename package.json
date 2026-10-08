@@ -1,0 +1,25 @@
+{
+  "name": "sistem-pakar-paru",
+  "version": "1.0.0",
+  "description": "Sistem Pakar Diagnosa Penyakit Paru-Paru Menggunakan Metode Forward Chaining",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "db:setup": "node scripts/setup-db.js",
+    "test": "node --test \"tests/**/*.test.js\""
+  },
+  "keywords": ["sistem-pakar", "forward-chaining", "paru-paru", "express"],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "method-override": "^3.0.0",
+    "mysql2": "^3.11.3",
+    "sequelize": "^6.37.4"
+  }
+}

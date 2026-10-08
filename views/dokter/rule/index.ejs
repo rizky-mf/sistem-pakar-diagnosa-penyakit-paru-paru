@@ -1,0 +1,44 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/dokter-nav') %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Data Aturan (Rule)</h4>
+  <a href="/dokter/rule/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>Kode</th><th>Aturan</th><th class="text-end">Aksi</th></tr></thead>
+      <tbody>
+        <% rules.forEach(r => { %>
+          <tr>
+            <td><span class="badge bg-dark"><%= r.kode %></span></td>
+            <td>
+              <strong>IF</strong>
+              <% if (r.gejalas.length) { %>
+                <% r.gejalas.forEach((g, i) => { %>
+                  <% if (i) { %><strong>AND</strong><% } %>
+                  <span class="badge bg-secondary" title="<%= g.nama %>"><%= g.kode %></span>
+                <% }) %>
+              <% } else { %>
+                <span class="text-danger">(tidak ada gejala, aturan tidak aktif)</span>
+              <% } %>
+              <strong>THEN</strong>
+              <span class="badge bg-primary"><%= r.penyakit.kode %></span> <%= r.penyakit.nama %>
+            </td>
+            <td class="text-end text-nowrap">
+              <a href="/dokter/rule/<%= r.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+              <form action="/dokter/rule/<%= r.id %>?_method=DELETE" method="POST" class="d-inline"
+                    onsubmit="return confirm('Hapus aturan <%= r.kode %>?')">
+                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

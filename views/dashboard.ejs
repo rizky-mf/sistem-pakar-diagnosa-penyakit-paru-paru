@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<%- include('partials/panel-nav') %>
+
+<div class="row g-3 mb-4">
+  <% kartu.forEach(([label, nilai, icon, link]) => { %>
+    <div class="col-6 col-md-3">
+      <a href="<%= link %>" class="card text-decoration-none h-100">
+        <div class="card-body">
+          <i class="bi <%= icon %> fs-3 text-primary"></i>
+          <div class="fs-3 fw-bold text-body"><%= nilai %></div>
+          <div class="text-muted"><%= label %></div>
+        </div>
+      </a>
+    </div>
+  <% }) %>
+</div>
+
+<div class="card">
+  <div class="card-header fw-semibold">Diagnosa Terbaru</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Tanggal</th><th>Pasien</th><th>Hasil</th><th></th></tr></thead>
+      <tbody>
+        <% if (!terbaru.length) { %>
+          <tr><td colspan="4" class="text-center text-muted">Belum ada data.</td></tr>
+        <% } %>
+        <% terbaru.forEach(r => { %>
+          <tr>
+            <td><%= new Date(r.createdAt).toLocaleString('id-ID') %></td>
+            <td><%= r.nama %></td>
+            <td><%= r.hasil.diagnosa.map(d => d.nama).join(', ') || '-' %></td>
+            <td><a href="<%= base %>/riwayat/<%= r.id %>" class="btn btn-sm btn-outline-primary">Detail</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
