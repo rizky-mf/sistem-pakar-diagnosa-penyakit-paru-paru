@@ -1,7 +1,7 @@
 <%- include('../../partials/header') %>
 <%- include('../../partials/admin-nav') %>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
   <h4 class="mb-0">Kelola Akun</h4>
   <a href="/admin/user/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah Admin/Dokter</a>
 </div>
@@ -9,7 +9,7 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Nama</th><th>Username</th><th>Role</th><th>JK</th><th>Tanggal Lahir</th><th class="text-end">Aksi</th></tr></thead>
+      <thead><tr><th>Nama</th><th>Username</th><th>Role</th><th class="d-none d-md-table-cell">JK</th><th class="d-none d-md-table-cell">Tanggal Lahir</th><th class="text-end">Aksi</th></tr></thead>
       <tbody>
         <% const warna = { admin: 'danger', dokter: 'success', pasien: 'secondary' }; %>
         <% users.forEach(u => { %>
@@ -17,8 +17,8 @@
             <td><%= u.nama %></td>
             <td><%= u.username %></td>
             <td><span class="badge bg-<%= warna[u.role] %> text-capitalize"><%= u.role %></span></td>
-            <td><%= u.jenisKelamin || '-' %></td>
-            <td><%= u.tanggalLahir ? new Date(u.tanggalLahir).toLocaleDateString('id-ID') : '-' %></td>
+            <td class="d-none d-md-table-cell"><%= u.jenisKelamin || '-' %></td>
+            <td class="d-none d-md-table-cell"><%= u.tanggalLahir ? new Date(u.tanggalLahir).toLocaleDateString('id-ID') : '-' %></td>
             <td class="text-end text-nowrap">
               <a href="/admin/user/<%= u.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
               <% if (u.id !== user.id) { %>

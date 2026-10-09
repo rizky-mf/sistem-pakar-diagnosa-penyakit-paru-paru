@@ -6,7 +6,7 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Tanggal</th><th>Pasien</th><th>Umur</th><th>JK</th><th>Jumlah Gejala</th><th>Hasil</th><th class="text-end">Aksi</th></tr></thead>
+      <thead><tr><th>Tanggal</th><th>Pasien</th><th class="d-none d-md-table-cell">Umur</th><th class="d-none d-md-table-cell">JK</th><th class="d-none d-md-table-cell">Jumlah Gejala</th><th>Hasil</th><th class="text-end">Aksi</th></tr></thead>
       <tbody>
         <% if (!riwayat.length) { %>
           <tr><td colspan="7" class="text-center text-muted">Belum ada data.</td></tr>
@@ -15,9 +15,9 @@
           <tr>
             <td class="text-nowrap"><%= new Date(r.createdAt).toLocaleString('id-ID') %></td>
             <td><%= r.nama %></td>
-            <td><%= r.umur %></td>
-            <td><%= r.jenisKelamin %></td>
-            <td><%= r.gejala.length %></td>
+            <td class="d-none d-md-table-cell"><%= r.umur %></td>
+            <td class="d-none d-md-table-cell"><%= r.jenisKelamin %></td>
+            <td class="d-none d-md-table-cell"><%= r.gejala.length %></td>
             <td><%= r.hasil.diagnosa.map(d => d.nama).join(', ') || '-' %></td>
             <td class="text-end text-nowrap">
               <a href="<%= base %>/riwayat/<%= r.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>

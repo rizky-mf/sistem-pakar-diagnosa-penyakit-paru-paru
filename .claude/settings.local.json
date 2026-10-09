@@ -4,7 +4,12 @@
       "Bash(sed -i \"s#render\\('admin/#render\\('dokter/#g\" controllers/dokter/*.js && grep -rn \"admin\" controllers/dokter views/dokter || echo \"clean\"; ls -R controllers views)",
       "Bash(sed -i \"s#\\\\.\\\\./partials/#partials/#g\" views/dashboard.ejs)",
       "Bash(sed -i \"s#render\\('admin/dashboard'#render\\('dashboard'#\" controllers/admin/dashboardController.js)",
-      "Bash(sed -i \"s#render\\('dokter/dashboard'#render\\('dashboard'#\" controllers/dokter/dashboardController.js)"
+      "Bash(sed -i \"s#render\\('dokter/dashboard'#render\\('dashboard'#\" controllers/dokter/dashboardController.js)",
+      "Bash(sed -i 's/class=\"d-flex justify-content-between align-items-center mb-3\"/class=\"d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3\"/' diagnosa/hasil.ejs dokter/*/index.ejs pasien/riwayat.ejs admin/user/index.ejs)",
+      "Bash(sed -i 's/class=\"nav nav-pills mb-4 no-print\"/class=\"nav nav-pills panel-nav flex-nowrap mb-4 no-print\"/' partials/admin-nav.ejs partials/dokter-nav.ejs)",
+      "Bash(sed -i 's#<th>Deskripsi</th>#<th __TRACKED_VAR__>Deskripsi</th>#; s#<td class=\"small text-muted\"><%= p.deskripsi#<td class=\"small text-muted d-none d-md-table-cell\"><%= p.deskripsi#' dokter/penyakit/index.ejs)",
+      "Bash(sed -i 's#<th>Umur</th><th>JK</th><th>Jumlah Gejala</th>#<th __TRACKED_VAR__>Umur</th><th __TRACKED_VAR__>JK</th><th __TRACKED_VAR__>Jumlah Gejala</th>#; s#<td><%= r.umur %></td>#<td __TRACKED_VAR__><%= r.umur %></td>#; s#<td><%= r.jenisKelamin %></td>#<td __TRACKED_VAR__><%= r.jenisKelamin %></td>#; s#<td><%= r.gejala.length %></td>#<td __TRACKED_VAR__><%= r.gejala.length %></td>#' riwayat/index.ejs)",
+      "Bash(sed -i 's#<th>Jumlah Gejala</th>#<th __TRACKED_VAR__>Jumlah Gejala</th>#; s#<td><%= r.gejala.length %></td>#<td __TRACKED_VAR__><%= r.gejala.length %></td>#' pasien/riwayat.ejs)"
     ],
     "additionalDirectories": [
       "C:\\Users\\VICTUS\\Desktop\\sistem-pakar\\controllers\\dokter"

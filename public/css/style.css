@@ -14,6 +14,56 @@ body {
   border-radius: 0.6rem;
 }
 
+/* Menu panel admin/dokter: digeser horizontal di layar sempit */
+.panel-nav {
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.panel-nav::-webkit-scrollbar {
+  display: none;
+}
+
+/* Layar HP */
+@media (max-width: 575.98px) {
+  h3 {
+    font-size: 1.35rem;
+  }
+  h4 {
+    font-size: 1.15rem;
+  }
+  .display-6 {
+    font-size: 1.6rem;
+  }
+  .lead {
+    font-size: 1rem;
+  }
+  .btn-lg {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  .table {
+    font-size: 0.875rem;
+  }
+  /* Area sentuh checkbox gejala lebih besar */
+  .gejala-item {
+    padding: 0.6rem 0 0.6rem 1.75rem;
+    border-bottom: 1px solid #eef0f4;
+  }
+  .gejala-item .form-check-input {
+    width: 1.25em;
+    height: 1.25em;
+  }
+  /* Tombol proses diagnosa menempel di bawah layar */
+  .sticky-submit {
+    position: sticky;
+    bottom: 0;
+    background: #f5f7fb;
+    padding: 0.75rem 0;
+    z-index: 10;
+  }
+}
+
 @media print {
   .no-print {
     display: none !important;

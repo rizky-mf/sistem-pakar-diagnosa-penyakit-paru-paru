@@ -1,7 +1,7 @@
 <%- include('../../partials/header') %>
 <%- include('../../partials/dokter-nav') %>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
   <h4 class="mb-0">Data Penyakit</h4>
   <a href="/dokter/penyakit/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
 </div>
@@ -9,13 +9,13 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Kode</th><th>Nama Penyakit</th><th>Deskripsi</th><th class="text-end">Aksi</th></tr></thead>
+      <thead><tr><th>Kode</th><th>Nama Penyakit</th><th class="d-none d-md-table-cell">Deskripsi</th><th class="text-end">Aksi</th></tr></thead>
       <tbody>
         <% penyakit.forEach(p => { %>
           <tr>
             <td><span class="badge bg-primary"><%= p.kode %></span></td>
             <td><%= p.nama %></td>
-            <td class="small text-muted"><%= p.deskripsi.length > 90 ? p.deskripsi.slice(0, 90) + '…' : p.deskripsi %></td>
+            <td class="small text-muted d-none d-md-table-cell"><%= p.deskripsi.length > 90 ? p.deskripsi.slice(0, 90) + '…' : p.deskripsi %></td>
             <td class="text-end text-nowrap">
               <a href="/dokter/penyakit/<%= p.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
               <form action="/dokter/penyakit/<%= p.id %>?_method=DELETE" method="POST" class="d-inline"
