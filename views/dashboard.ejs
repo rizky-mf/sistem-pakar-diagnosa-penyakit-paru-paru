@@ -101,7 +101,7 @@
               <div class="bar-row" title="<%= d.nama %>: <%= d.jumlah %> diagnosa">
                 <span class="lbl"><%= d.nama %></span>
                 <span class="val"><%= d.jumlah %></span>
-                <div class="bar-track"><div class="bar-fill" style="width: <%= (d.jumlah / maks) * 100 %>%"></div></div>
+                <div class="bar-track"><div class="bar-fill" <%- `style="width: ${(d.jumlah / maks) * 100}%"` %>></div></div>
               </div>
             <% }) %>
           </div>

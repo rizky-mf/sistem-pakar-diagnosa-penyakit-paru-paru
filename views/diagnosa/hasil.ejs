@@ -67,7 +67,7 @@
                 <span class="text-muted text-nowrap"><%= p.cocok %>/<%= p.total %> gejala &middot; <strong style="color: var(--ink)"><%= p.persen %>%</strong></span>
               </div>
               <div class="progress" style="height: 8px" role="progressbar" aria-label="Kecocokan <%= p.nama %>" aria-valuenow="<%= p.persen %>" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" style="width: <%= p.persen %>%"></div>
+                <div class="progress-bar" <%- `style="width: ${Number(p.persen)}%"` %>></div>
               </div>
             </div>
           <% }) %>
