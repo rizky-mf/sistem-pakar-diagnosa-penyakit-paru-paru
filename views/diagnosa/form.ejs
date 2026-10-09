@@ -1,58 +1,87 @@
 <%- include('../partials/header') %>
+<%- include('../partials/stepper', { langkah: 2 }) %>
 
-<h3 class="mb-3">Diagnosa Penyakit Paru-Paru</h3>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Pilih gejala yang Anda alami</h1>
+    <p class="page-subtitle">Centang semua gejala yang sesuai. Semakin lengkap, semakin akurat hasil penalaran sistem.</p>
+  </div>
+</div>
 
 <% if (errors.length) { %>
-  <div class="alert alert-danger">
-    <ul class="mb-0"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+  <div class="alert alert-danger d-flex gap-2 align-items-center">
+    <i class="bi bi-exclamation-circle-fill"></i><span><%= errors.join(' ') %></span>
   </div>
 <% } %>
 
-<form action="/diagnosa" method="POST">
-  <div class="card mb-3">
-    <div class="card-header fw-semibold">1. Data Pasien</div>
-    <div class="card-body">
-      <table class="table table-sm table-borderless mb-0 w-auto">
-        <tr><td class="text-muted pe-4">Nama</td><td><%= pasien.nama %></td></tr>
-        <tr><td class="text-muted pe-4">Umur</td><td><%= pasien.umur %> tahun</td></tr>
-        <tr><td class="text-muted pe-4">Jenis Kelamin</td><td><%= pasien.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></td></tr>
-      </table>
-    </div>
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-      <span>2. Pilih Gejala yang Dialami</span>
-      <span class="badge bg-secondary" id="jumlahDipilih">0 dipilih</span>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <% gejala.forEach(g => { %>
-          <div class="col-md-6">
-            <div class="form-check gejala-item">
-              <input class="form-check-input" type="checkbox" name="gejala" value="<%= g.kode %>" id="g<%= g.id %>"
-                <%= dipilih.includes(g.kode) ? 'checked' : '' %>>
-              <label class="form-check-label" for="g<%= g.id %>">
-                <span class="text-muted small"><%= g.kode %></span> &middot; <%= g.nama %>
-              </label>
-            </div>
+<div class="row g-4">
+  <div class="col-lg-4 col-xl-3 order-lg-last">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="avatar"><%= pasien.nama.trim().charAt(0).toUpperCase() %></span>
+          <div class="lh-sm">
+            <div class="fw-bold"><%= pasien.nama %></div>
+            <small class="text-muted">Data pasien</small>
           </div>
-        <% }) %>
+        </div>
+        <dl class="info-list">
+          <dt>Umur</dt><dd><%= pasien.umur %> tahun</dd>
+          <dt>Kelamin</dt><dd><%= pasien.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card mt-3 d-none d-lg-block">
+      <div class="card-body small text-muted d-flex gap-2">
+        <i class="bi bi-lightbulb text-primary"></i>
+        <span>Sistem akan mencocokkan gejala dengan aturan <strong>IF&ndash;THEN</strong> dari pakar. Penyakit disimpulkan jika <em>semua</em> syarat aturannya terpenuhi.</span>
       </div>
     </div>
   </div>
 
-  <div class="sticky-submit">
-    <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-search"></i> Proses Diagnosa</button>
-  </div>
-</form>
+  <div class="col-lg-8 col-xl-9">
+    <form action="/diagnosa" method="POST" id="formDiagnosa">
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <div class="input-icon flex-grow-1">
+          <i class="bi bi-search"></i>
+          <input type="search" class="form-control" placeholder="Cari gejala, misalnya: batuk, sesak, demam..." data-filter="#daftarGejala" data-filter-empty="#gejalaKosong" aria-label="Cari gejala">
+        </div>
+        <button type="button" class="btn btn-ghost" data-uncheck-all><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+      </div>
 
-<script>
-  const boxes = document.querySelectorAll('input[name="gejala"]');
-  const label = document.getElementById('jumlahDipilih');
-  const hitung = () => { label.textContent = [...boxes].filter(b => b.checked).length + ' dipilih'; };
-  boxes.forEach(b => b.addEventListener('change', hitung));
-  hitung();
-</script>
+      <div class="row g-2" id="daftarGejala">
+        <% gejala.forEach(g => { %>
+          <div class="col-md-6" data-filter-item data-search="<%= g.kode %> <%= g.nama %>">
+            <label class="gejala-card" for="g<%= g.id %>">
+              <input class="form-check-input" type="checkbox" name="gejala" value="<%= g.kode %>" id="g<%= g.id %>"
+                <%= dipilih.includes(g.kode) ? 'checked' : '' %>>
+              <span>
+                <span class="gejala-kode"><%= g.kode %></span>
+                <span class="gejala-nama"><%= g.nama %></span>
+              </span>
+            </label>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="card mt-2" id="gejalaKosong" hidden>
+        <div class="empty-state py-4">
+          <h6 class="mb-1">Gejala tidak ditemukan</h6>
+          <p class="mb-0 small">Coba kata kunci lain.</p>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="lh-sm">
+          <span class="count" data-count-checked='#daftarGejala input[name="gejala"]'>0</span>
+          <span class="text-muted small"> gejala dipilih</span>
+        </div>
+        <button type="submit" class="btn btn-primary" data-requires-checked>
+          Proses Diagnosa <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <%- include('../partials/footer') %>

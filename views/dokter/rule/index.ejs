@@ -1,43 +1,76 @@
 <%- include('../../partials/header') %>
-<%- include('../../partials/dokter-nav') %>
 
-<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">Data Aturan (Rule)</h4>
-  <a href="/dokter/rule/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Aturan (Rule)</h1>
+    <p class="page-subtitle">Basis aturan <code>IF gejala AND ... THEN penyakit</code> yang dipakai mesin forward chaining.</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <div class="input-icon" style="min-width: min(100%, 15rem)">
+      <i class="bi bi-search"></i>
+      <input type="search" class="form-control" placeholder="Cari aturan..." data-filter="#daftarRule" data-filter-empty="#ruleKosong" aria-label="Cari aturan">
+    </div>
+    <a href="/dokter/rule/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
+  </div>
 </div>
 
-<div class="card">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Kode</th><th>Aturan</th><th class="text-end">Aksi</th></tr></thead>
-      <tbody>
-        <% rules.forEach(r => { %>
-          <tr>
-            <td><span class="badge bg-dark"><%= r.kode %></span></td>
-            <td>
-              <strong>IF</strong>
-              <% if (r.gejalas.length) { %>
-                <% r.gejalas.forEach((g, i) => { %>
-                  <% if (i) { %><strong>AND</strong><% } %>
-                  <span class="badge bg-secondary" title="<%= g.nama %>"><%= g.kode %></span>
-                <% }) %>
-              <% } else { %>
-                <span class="text-danger">(tidak ada gejala, aturan tidak aktif)</span>
-              <% } %>
-              <strong>THEN</strong>
-              <span class="badge bg-primary"><%= r.penyakit.kode %></span> <%= r.penyakit.nama %>
-            </td>
-            <td class="text-end text-nowrap">
-              <a href="/dokter/rule/<%= r.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+<% if (!rules.length) { %>
+  <div class="card">
+    <div class="empty-state">
+      <div class="icon-tile lg tone-violet"><i class="bi bi-diagram-3"></i></div>
+      <h6>Belum ada aturan</h6>
+      <a href="/dokter/rule/tambah" class="btn btn-primary btn-sm mt-2">Tambah Aturan</a>
+    </div>
+  </div>
+<% } %>
+
+<div class="row g-3" id="daftarRule">
+  <% rules.forEach(r => { %>
+    <div class="col-xl-6" data-filter-item data-search="<%= r.kode %> <%= r.penyakit.kode %> <%= r.penyakit.nama %> <%= r.gejalas.map(g => g.kode + ' ' + g.nama).join(' ') %>">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge badge-code neutral"><%= r.kode %></span>
+              <span class="fw-bold"><%= r.penyakit.nama %></span>
+            </div>
+            <div class="text-nowrap">
+              <a href="/dokter/rule/<%= r.id %>/edit" class="btn btn-ghost btn-icon btn-sm" aria-label="Edit"><i class="bi bi-pencil"></i></a>
               <form action="/dokter/rule/<%= r.id %>?_method=DELETE" method="POST" class="d-inline"
-                    onsubmit="return confirm('Hapus aturan <%= r.kode %>?')">
-                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    data-confirm="Aturan <%= r.kode %> untuk <%= r.penyakit.nama %> akan dihapus.">
+                <button class="btn btn-ghost btn-icon btn-sm danger" aria-label="Hapus"><i class="bi bi-trash3"></i></button>
               </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+            </div>
+          </div>
+          <div class="rule-expr">
+            <span class="kw">IF</span>
+            <% if (r.gejalas.length) { %>
+              <% r.gejalas.forEach((g, i) => { %>
+                <% if (i) { %><span class="kw">AND</span><% } %>
+                <span class="badge badge-code neutral" title="<%= g.nama %>"><%= g.kode %></span>
+              <% }) %>
+            <% } else { %>
+              <span class="text-danger small">(tidak ada gejala - aturan tidak aktif)</span>
+            <% } %>
+            <span class="kw">THEN</span>
+            <span class="badge badge-code"><%= r.penyakit.kode %></span>
+          </div>
+          <details class="mt-3 small">
+            <summary class="text-muted" style="cursor: pointer">Lihat nama gejala</summary>
+            <ul class="mt-2 mb-0 ps-3 text-muted">
+              <% r.gejalas.forEach(g => { %><li><strong><%= g.kode %></strong> &mdash; <%= g.nama %></li><% }) %>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<div class="card" id="ruleKosong" hidden>
+  <div class="empty-state py-4">
+    <h6 class="mb-1">Aturan tidak ditemukan</h6>
+    <p class="mb-0 small">Coba kata kunci lain.</p>
   </div>
 </div>
 

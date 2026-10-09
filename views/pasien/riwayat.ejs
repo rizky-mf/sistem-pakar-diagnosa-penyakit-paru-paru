@@ -1,29 +1,43 @@
 <%- include('../partials/header') %>
 
-<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-  <h3 class="mb-0">Riwayat Diagnosa Saya</h3>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Riwayat Diagnosa</h1>
+    <p class="page-subtitle">Semua hasil diagnosa Anda tersimpan di sini.</p>
+  </div>
   <a href="/diagnosa" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Diagnosa Baru</a>
 </div>
 
-<div class="card">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Tanggal</th><th class="d-none d-md-table-cell">Jumlah Gejala</th><th>Hasil</th><th class="text-end">Aksi</th></tr></thead>
-      <tbody>
-        <% if (!riwayat.length) { %>
-          <tr><td colspan="4" class="text-center text-muted">Anda belum pernah melakukan diagnosa.</td></tr>
-        <% } %>
-        <% riwayat.forEach(r => { %>
-          <tr>
-            <td class="text-nowrap"><%= new Date(r.createdAt).toLocaleString('id-ID') %></td>
-            <td class="d-none d-md-table-cell"><%= r.gejala.length %></td>
-            <td><%= r.hasil.diagnosa.map(d => d.nama).join(', ') || 'Tidak ada aturan terpenuhi' %></td>
-            <td class="text-end"><a href="/diagnosa/hasil/<%= r.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> Lihat</a></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+<div class="card card-table">
+  <% if (!riwayat.length) { %>
+    <div class="empty-state">
+      <div class="icon-tile lg tone-teal"><i class="bi bi-clipboard2-pulse"></i></div>
+      <h6>Belum ada riwayat diagnosa</h6>
+      <p class="mb-3">Mulai diagnosa pertama Anda untuk melihat hasilnya di sini.</p>
+      <a href="/diagnosa" class="btn btn-primary btn-sm">Mulai Diagnosa</a>
+    </div>
+  <% } %>
+  <% riwayat.forEach(r => { const t = new Date(r.createdAt); %>
+    <a class="list-item" href="/diagnosa/hasil/<%= r.id %>">
+      <div class="date-tile">
+        <div class="d"><%= t.getDate() %></div>
+        <div class="m"><%= t.toLocaleDateString('id-ID', { month: 'short' }) %></div>
+      </div>
+      <div class="flex-grow-1 min-w-0">
+        <div class="d-flex flex-wrap gap-1 mb-1">
+          <% if (r.hasil.diagnosa.length) { %>
+            <% r.hasil.diagnosa.forEach(d => { %><span class="fw-bold"><%= d.nama %></span><% }) %>
+          <% } else { %>
+            <span class="fw-bold text-muted">Tidak ada kesimpulan</span>
+          <% } %>
+        </div>
+        <div class="small text-muted">
+          <%= r.gejala.length %> gejala &middot; <%= t.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %> &middot; <%= t.getFullYear() %>
+        </div>
+      </div>
+      <i class="bi bi-chevron-right text-muted"></i>
+    </a>
+  <% }) %>
 </div>
 
 <%- include('../partials/footer') %>

@@ -1,0 +1,11 @@
+<%# Parameter: langkah (1-3) = langkah yang sedang aktif %>
+<% const daftarLangkah = ['Data Pasien', 'Pilih Gejala', 'Hasil Diagnosa']; %>
+<div class="stepper no-print" aria-label="Tahapan diagnosa">
+  <% daftarLangkah.forEach((nama, i) => { const n = i + 1; const status = n < langkah ? 'done' : n === langkah ? 'active' : ''; %>
+    <% if (i) { %><span class="step-line <%= n <= langkah ? 'done' : '' %>"></span><% } %>
+    <div class="step <%= status %>">
+      <span class="dot"><% if (status === 'done') { %><i class="bi bi-check-lg"></i><% } else { %><%= n %><% } %></span>
+      <span class="<%= status === 'active' ? '' : 'd-none d-sm-inline' %>"><%= nama %></span>
+    </div>
+  <% }) %>
+</div>

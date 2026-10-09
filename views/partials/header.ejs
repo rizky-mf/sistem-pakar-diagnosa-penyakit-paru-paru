@@ -1,59 +1,187 @@
+<%
+  const role = user ? user.role : null;
+  const isPanel = (role === 'admin' || role === 'dokter') &&
+    (currentPath.startsWith('/admin') || currentPath.startsWith('/dokter'));
+  const isBare = typeof layout !== 'undefined' && layout === 'bare';
+  const inisial = user ? user.nama.trim().charAt(0).toUpperCase() : '';
+  const aktif = (href, persis) => persis ? (currentPath === href || currentPath === href + '/') : currentPath.startsWith(href);
+
+  // Menu sidebar panel: [href, ikon, label] atau ['#label', judul grup]
+  const menu = role === 'admin'
+    ? [
+        ['/admin', 'bi-grid-1x2', 'Dashboard'],
+        ['#label', 'Manajemen'],
+        ['/admin/user', 'bi-people', 'Kelola Akun'],
+        ['/admin/riwayat', 'bi-clock-history', 'Riwayat Diagnosa'],
+      ]
+    : [
+        ['/dokter', 'bi-grid-1x2', 'Dashboard'],
+        ['#label', 'Basis Pengetahuan'],
+        ['/dokter/penyakit', 'bi-virus', 'Penyakit'],
+        ['/dokter/gejala', 'bi-list-check', 'Gejala'],
+        ['/dokter/rule', 'bi-diagram-3', 'Aturan (Rule)'],
+        ['#label', 'Pasien'],
+        ['/dokter/riwayat', 'bi-clock-history', 'Riwayat Diagnosa'],
+      ];
+%>
 <!doctype html>
-<html lang="id">
+<html lang="id" data-bs-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>Sistem Pakar Paru</title>
+  <meta name="theme-color" content="#0f766e">
+  <title><%= typeof title !== 'undefined' ? title + ' · ' : '' %>SiPakar Paru</title>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="/css/style.css" rel="stylesheet">
 </head>
-<body class="d-flex flex-column min-vh-100">
-<% const role = user ? user.role : null; %>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary no-print">
+<body class="<%= isPanel || isBare ? '' : 'd-flex flex-column min-vh-100' %>">
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <% success.forEach(pesan => { %>
+    <div class="toast" role="status" aria-live="polite">
+      <div class="d-flex align-items-center">
+        <div class="toast-body d-flex gap-2 align-items-center"><i class="bi bi-check-circle-fill text-success fs-5"></i><%= pesan %></div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
+      </div>
+    </div>
+  <% }) %>
+  <% error.forEach(pesan => { %>
+    <div class="toast" role="alert" aria-live="assertive">
+      <div class="d-flex align-items-center">
+        <div class="toast-body d-flex gap-2 align-items-center"><i class="bi bi-exclamation-circle-fill text-danger fs-5"></i><%= pesan %></div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<% if (isPanel) { %>
+<div class="panel-layout">
+  <aside class="sidebar-wrap">
+    <div class="offcanvas-lg offcanvas-start sidebar" tabindex="-1" id="sidebar" aria-label="Menu panel">
+      <div class="offcanvas-header border-bottom">
+        <a class="brand" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Panel <%= role %></small></span></a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Tutup"></button>
+      </div>
+      <div class="offcanvas-body">
+        <a class="brand d-none d-lg-inline-flex px-2 pt-1" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Panel <span class="text-capitalize"><%= role %></span></small></span></a>
+        <nav class="d-flex flex-column gap-1 mt-3">
+          <% menu.forEach(([href, a, b], i) => { %>
+            <% if (href === '#label') { %>
+              <div class="side-label"><%= a %></div>
+            <% } else { %>
+              <a class="side-link <%= aktif(href, i === 0) ? 'active' : '' %>" href="<%= href %>"><i class="bi <%= a %>"></i><%= b %></a>
+            <% } %>
+          <% }) %>
+        </nav>
+        <div class="mt-auto pt-4 d-flex flex-column gap-1">
+          <a class="side-link" href="/"><i class="bi bi-house"></i>Lihat Beranda</a>
+          <form action="/logout" method="POST">
+            <button class="side-link danger" type="submit"><i class="bi bi-box-arrow-left"></i>Keluar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="panel-main">
+    <header class="topbar no-print">
+      <button class="btn btn-ghost btn-icon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-label="Buka menu">
+        <i class="bi bi-list fs-5"></i>
+      </button>
+      <div class="topbar-title"><%= typeof title !== 'undefined' ? title : '' %></div>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <button class="btn btn-ghost btn-icon" type="button" data-theme-toggle aria-label="Ganti tema"><i class="bi bi-moon-stars"></i></button>
+        <div class="dropdown">
+          <button class="user-chip" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="avatar sm"><%= inisial %></span>
+            <span class="d-none d-sm-block text-start"><span class="name"><%= user.nama %></span><span class="role"><%= role %></span></span>
+            <i class="bi bi-chevron-down small text-muted"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/"><i class="bi bi-house"></i>Beranda</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form action="/logout" method="POST">
+                <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="panel-content">
+
+<% } else if (isBare) { %>
+
+<% } else { %>
+<nav class="navbar navbar-expand-lg app-navbar sticky-top no-print">
   <div class="container">
-    <a class="navbar-brand fw-semibold" href="/"><i class="bi bi-lungs"></i> SiPakar Paru</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <a class="brand" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Sistem Pakar Diagnosa</small></span></a>
+
+    <div class="d-flex align-items-center gap-2 ms-auto order-lg-last">
+      <button class="btn btn-ghost btn-icon" type="button" data-theme-toggle aria-label="Ganti tema"><i class="bi bi-moon-stars"></i></button>
+      <% if (user) { %>
+        <div class="dropdown">
+          <button class="user-chip" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="avatar sm"><%= inisial %></span>
+            <span class="d-none d-md-block text-start"><span class="name"><%= user.nama %></span><span class="role"><%= role %></span></span>
+            <i class="bi bi-chevron-down small text-muted"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <% if (role === 'pasien') { %>
+              <li><a class="dropdown-item" href="/diagnosa"><i class="bi bi-clipboard2-pulse"></i>Diagnosa Baru</a></li>
+              <li><a class="dropdown-item" href="/riwayat-saya"><i class="bi bi-clock-history"></i>Riwayat Saya</a></li>
+            <% } else { %>
+              <li><a class="dropdown-item" href="/<%= role %>"><i class="bi bi-grid-1x2"></i>Panel <span class="text-capitalize"><%= role %></span></a></li>
+            <% } %>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form action="/logout" method="POST">
+                <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right"></i>Keluar</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      <% } else { %>
+        <a class="btn btn-ghost d-none d-sm-inline-flex" href="/login">Masuk</a>
+        <a class="btn btn-primary" href="/register">Daftar</a>
+      <% } %>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
     <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav me-auto">
+      <ul class="navbar-nav mx-lg-auto gap-lg-1">
         <li class="nav-item"><a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">Beranda</a></li>
         <% if (role === 'pasien') { %>
           <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/diagnosa') ? 'active' : '' %>" href="/diagnosa">Diagnosa</a></li>
           <li class="nav-item"><a class="nav-link <%= currentPath === '/riwayat-saya' ? 'active' : '' %>" href="/riwayat-saya">Riwayat Saya</a></li>
         <% } %>
-        <% if (role === 'dokter') { %>
-          <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/dokter') ? 'active' : '' %>" href="/dokter">Panel Dokter</a></li>
-        <% } %>
-        <% if (role === 'admin') { %>
-          <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/admin') ? 'active' : '' %>" href="/admin">Panel Admin</a></li>
-        <% } %>
         <li class="nav-item"><a class="nav-link <%= currentPath === '/penyakit' ? 'active' : '' %>" href="/penyakit">Info Penyakit</a></li>
-      </ul>
-      <ul class="navbar-nav">
-        <% if (user) { %>
-          <li class="nav-item">
-            <span class="navbar-text me-2"><i class="bi bi-person-circle"></i> <%= user.nama %>
-              <span class="badge bg-light text-primary text-capitalize"><%= user.role %></span></span>
-          </li>
-          <li class="nav-item">
-            <form action="/logout" method="POST" class="d-inline">
-              <button class="btn btn-link nav-link" type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
-            </form>
-          </li>
-        <% } else { %>
-          <li class="nav-item"><a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="/register"><i class="bi bi-person-plus"></i> Daftar</a></li>
+        <% if (role === 'admin' || role === 'dokter') { %>
+          <li class="nav-item"><a class="nav-link" href="/<%= role %>">Panel <span class="text-capitalize"><%= role %></span></a></li>
+        <% } %>
+        <% if (!user) { %>
+          <li class="nav-item d-sm-none"><a class="nav-link" href="/login">Masuk</a></li>
         <% } %>
       </ul>
     </div>
   </div>
 </nav>
-<main class="container py-4 flex-grow-1">
-<% if (success && success.length) { %>
-  <div class="alert alert-success alert-dismissible fade show no-print"><%= success[0] %><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-<% } %>
-<% if (error && error.length) { %>
-  <div class="alert alert-danger alert-dismissible fade show no-print"><%= error[0] %><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<main class="container py-4 py-lg-5 flex-grow-1">
 <% } %>

@@ -1,52 +1,98 @@
 <%- include('partials/header') %>
+<%
+  const ctaUtama = !user
+    ? { href: '/register', ikon: 'bi-person-plus', label: 'Mulai Sekarang' }
+    : user.role === 'pasien'
+      ? { href: '/diagnosa', ikon: 'bi-clipboard2-pulse', label: 'Mulai Diagnosa' }
+      : { href: '/' + user.role, ikon: 'bi-grid-1x2', label: 'Buka Panel ' + (user.role === 'admin' ? 'Admin' : 'Dokter') };
+%>
 
-<div class="p-4 p-md-5 mb-4 bg-white rounded-3 border">
-  <h1 class="display-6 fw-bold">Sistem Pakar Diagnosa Penyakit Paru-Paru</h1>
-  <p class="lead col-lg-9">
-    Aplikasi ini membantu mengenali kemungkinan penyakit paru-paru berdasarkan gejala yang Anda alami,
-    menggunakan metode <strong>Forward Chaining</strong>, yaitu penalaran dari fakta (gejala) menuju kesimpulan (penyakit).
-  </p>
-  <% if (!user) { %>
-    <a href="/register" class="btn btn-primary btn-lg"><i class="bi bi-person-plus"></i> Daftar sebagai Pasien</a>
-    <a href="/login" class="btn btn-outline-primary btn-lg">Login</a>
-  <% } else if (user.role === 'pasien') { %>
-    <a href="/diagnosa" class="btn btn-primary btn-lg"><i class="bi bi-clipboard2-pulse"></i> Mulai Diagnosa</a>
-  <% } else { %>
-    <a href="/<%= user.role %>" class="btn btn-primary btn-lg"><i class="bi bi-speedometer2"></i> Ke Panel <%= user.role === 'admin' ? 'Admin' : 'Dokter' %></a>
-  <% } %>
-</div>
+<section class="hero">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-6">
+      <span class="eyebrow"><i class="bi bi-stars"></i> Sistem Pakar &middot; Forward Chaining</span>
+      <h1 class="hero-title mt-3">Kenali kondisi <span class="text-gradient text-nowrap">paru&#8209;paru</span> Anda lebih awal</h1>
+      <p class="hero-lead mt-3">
+        Pilih gejala yang Anda rasakan, dan sistem akan menelusuri basis pengetahuan pakar
+        untuk menemukan kemungkinan penyakit paru beserta saran penanganannya.
+      </p>
+      <div class="d-grid d-sm-flex gap-2 mt-4">
+        <a href="<%= ctaUtama.href %>" class="btn btn-primary btn-lg"><i class="bi <%= ctaUtama.ikon %>"></i><%= ctaUtama.label %></a>
+        <a href="/penyakit" class="btn btn-ghost btn-lg"><i class="bi bi-book"></i>Info Penyakit</a>
+      </div>
+      <div class="hero-stats mt-5">
+        <div><div class="num"><%= jumlahPenyakit %></div><div class="lbl">Jenis penyakit</div></div>
+        <div><div class="num"><%= jumlahGejala %></div><div class="lbl">Gejala dikenali</div></div>
+        <div><div class="num"><%= jumlahRule %></div><div class="lbl">Aturan pakar</div></div>
+      </div>
+    </div>
+    <div class="col-lg-6 d-none d-md-block">
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-orb"><i class="bi bi-lungs"></i></div>
+        <div class="float-chip chip-1"><span class="icon-tile tone-teal"><i class="bi bi-clipboard2-check"></i></span>Analisis gejala</div>
+        <div class="float-chip chip-2"><span class="icon-tile tone-sky"><i class="bi bi-diagram-3"></i></span>Aturan pakar</div>
+        <div class="float-chip chip-3"><span class="icon-tile tone-violet"><i class="bi bi-lightning-charge"></i></span>Hasil instan</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="row g-3 mb-4">
-  <div class="col-md-4">
-    <div class="card h-100 text-center"><div class="card-body">
-      <div class="fs-2 fw-bold text-primary"><%= jumlahPenyakit %></div><div class="text-muted">Penyakit</div>
-    </div></div>
+<section class="py-5">
+  <div class="text-center mb-4 mb-lg-5">
+    <span class="eyebrow">Cara Kerja</span>
+    <h2 class="section-title mt-3 mb-2">Tiga langkah sederhana</h2>
+    <p class="section-sub mx-auto" style="max-width: 34rem">Sistem menalar dari fakta (gejala) menuju kesimpulan (penyakit) menggunakan aturan <code>IF&ndash;THEN</code> dari pakar.</p>
   </div>
-  <div class="col-md-4">
-    <div class="card h-100 text-center"><div class="card-body">
-      <div class="fs-2 fw-bold text-primary"><%= jumlahGejala %></div><div class="text-muted">Gejala</div>
-    </div></div>
+  <div class="row g-3 g-lg-4">
+    <% [
+      ['bi-person-check', 'tone-teal', 'Daftar & masuk', 'Buat akun pasien agar hasil diagnosa tersimpan dan dapat dilihat kembali.'],
+      ['bi-ui-checks-grid', 'tone-sky', 'Pilih gejala', 'Centang gejala yang Anda alami dari daftar gejala yang telah disusun pakar.'],
+      ['bi-clipboard2-pulse', 'tone-violet', 'Lihat hasil', 'Dapatkan kemungkinan penyakit, saran penanganan, dan jejak penalaran sistem.'],
+    ].forEach(([ikon, tone, judul, teks], i) => { %>
+      <div class="col-md-4">
+        <div class="card card-hover h-100">
+          <div class="card-body p-4">
+            <div class="icon-tile lg <%= tone %> mb-3"><i class="bi <%= ikon %>"></i></div>
+            <div class="step-num mb-1">Langkah <%= i + 1 %></div>
+            <h5 class="fw-bold"><%= judul %></h5>
+            <p class="text-muted mb-0"><%= teks %></p>
+          </div>
+        </div>
+      </div>
+    <% }) %>
   </div>
-  <div class="col-md-4">
-    <div class="card h-100 text-center"><div class="card-body">
-      <div class="fs-2 fw-bold text-primary"><%= jumlahRule %></div><div class="text-muted">Aturan</div>
-    </div></div>
-  </div>
-</div>
+</section>
 
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Cara Kerja</h5>
-    <ol class="mb-0">
-      <li>Daftar dan login sebagai pasien, lalu pilih gejala yang Anda alami.</li>
-      <li>Sistem mencocokkan gejala dengan aturan <code>IF gejala THEN penyakit</code> dalam basis pengetahuan.</li>
-      <li>Aturan yang seluruh syaratnya terpenuhi akan menghasilkan kesimpulan diagnosa beserta solusi.</li>
-    </ol>
+<% if (daftarPenyakit.length) { %>
+<section class="py-4">
+  <div class="d-flex justify-content-between flex-wrap align-items-end gap-3 mb-4">
+    <div>
+      <h2 class="section-title mb-1">Penyakit yang dapat dikenali</h2>
+      <p class="section-sub mb-0">Basis pengetahuan mencakup penyakit paru yang umum ditemui.</p>
+    </div>
+    <a href="/penyakit" class="btn btn-ghost">Lihat semua <i class="bi bi-arrow-right"></i></a>
   </div>
-</div>
+  <div class="d-flex flex-wrap gap-2">
+    <% daftarPenyakit.forEach(p => { %>
+      <a class="pill-link" href="/penyakit"><span class="badge badge-code rounded-pill"><%= p.kode %></span><%= p.nama %></a>
+    <% }) %>
+  </div>
+</section>
+<% } %>
 
-<p class="text-muted small mt-3">
-  <i class="bi bi-info-circle"></i> Hasil sistem ini bukan pengganti diagnosis dokter. Segera konsultasikan ke tenaga medis untuk pemeriksaan lebih lanjut.
-</p>
+<section class="py-5">
+  <div class="cta-band">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-8">
+        <h2 class="mb-2">Siap memeriksa gejala Anda?</h2>
+        <p class="mb-0">Hanya butuh beberapa menit. Hasil dilengkapi saran penanganan dan dapat dicetak untuk dibawa saat konsultasi.</p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        <a href="<%= ctaUtama.href %>" class="btn btn-light btn-lg fw-bold"><i class="bi <%= ctaUtama.ikon %>"></i><%= ctaUtama.label %></a>
+      </div>
+    </div>
+  </div>
+  <p class="disclaimer"><i class="bi bi-info-circle"></i>Hasil sistem pakar ini bukan pengganti diagnosis dokter. Segera konsultasikan ke tenaga medis untuk pemeriksaan lebih lanjut.</p>
+</section>
 
 <%- include('partials/footer') %>

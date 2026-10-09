@@ -1,58 +1,70 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { layout: 'bare' }) %>
 
-<div class="row justify-content-center">
-  <div class="col-md-7 col-lg-5">
-    <div class="card shadow-sm">
-      <div class="card-body p-4">
-        <h4 class="mb-1 text-center">Daftar Akun Pasien</h4>
-        <p class="text-muted text-center small mb-3">Daftar untuk melakukan diagnosa dan menyimpan riwayat Anda.</p>
+<div class="auth-wrap">
+  <%- include('partials/auth-aside') %>
 
-        <% if (errors.length) { %>
-          <div class="alert alert-danger"><ul class="mb-0"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul></div>
-        <% } %>
-
-        <form action="/register" method="POST">
-          <div class="mb-3">
-            <label class="form-label" for="nama">Nama Lengkap</label>
-            <input class="form-control" id="nama" name="nama" value="<%= old.nama || '' %>" required>
-          </div>
-          <div class="row g-3 mb-3">
-            <div class="col-sm-6">
-              <label class="form-label" for="tanggalLahir">Tanggal Lahir</label>
-              <input class="form-control" id="tanggalLahir" name="tanggalLahir" type="date" value="<%= old.tanggalLahir || '' %>" required>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label d-block">Jenis Kelamin</label>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="jenisKelamin" id="jkL" value="L" <%= old.jenisKelamin === 'L' ? 'checked' : '' %> required>
-                <label class="form-check-label" for="jkL">Laki-laki</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="jenisKelamin" id="jkP" value="P" <%= old.jenisKelamin === 'P' ? 'checked' : '' %>>
-                <label class="form-check-label" for="jkP">Perempuan</label>
-              </div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label" for="username">Username</label>
-            <input class="form-control" id="username" name="username" value="<%= old.username || '' %>" required>
-          </div>
-          <div class="row g-3 mb-3">
-            <div class="col-sm-6">
-              <label class="form-label" for="password">Password</label>
-              <input class="form-control" id="password" name="password" type="password" minlength="6" required>
-            </div>
-            <div class="col-sm-6">
-              <label class="form-label" for="konfirmasi">Konfirmasi Password</label>
-              <input class="form-control" id="konfirmasi" name="konfirmasi" type="password" minlength="6" required>
-            </div>
-          </div>
-          <button class="btn btn-primary w-100" type="submit">Daftar</button>
-        </form>
-        <p class="text-center small mt-3 mb-0">Sudah punya akun? <a href="/login">Login</a></p>
-      </div>
+  <main class="auth-main">
+    <div class="auth-tools">
+      <a href="/" class="btn btn-ghost btn-sm"><i class="bi bi-arrow-left"></i> Beranda</a>
+      <button class="btn btn-ghost btn-icon" type="button" data-theme-toggle aria-label="Ganti tema"><i class="bi bi-moon-stars"></i></button>
     </div>
-  </div>
+
+    <div class="auth-card">
+      <a class="brand d-lg-none mb-4" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Sistem Pakar Diagnosa</small></span></a>
+      <h1 class="h3 fw-800 mb-1">Buat akun pasien</h1>
+      <p class="text-muted mb-4">Daftar untuk melakukan diagnosa dan menyimpan riwayat Anda.</p>
+
+      <% if (errors.length) { %>
+        <div class="alert alert-danger small">
+          <ul class="mb-0 ps-3"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+        </div>
+      <% } %>
+
+      <form action="/register" method="POST" class="d-flex flex-column gap-3">
+        <div>
+          <label class="form-label" for="nama">Nama lengkap</label>
+          <div class="input-icon">
+            <i class="bi bi-person-vcard"></i>
+            <input class="form-control" id="nama" name="nama" value="<%= old.nama || '' %>" placeholder="Nama sesuai identitas" autocomplete="name" required>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label" for="tanggalLahir">Tanggal lahir</label>
+            <input class="form-control" id="tanggalLahir" name="tanggalLahir" type="date" value="<%= old.tanggalLahir || '' %>" required>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="jenisKelamin">Jenis kelamin</label>
+            <select class="form-select" id="jenisKelamin" name="jenisKelamin" required>
+              <option value="" disabled <%= old.jenisKelamin ? '' : 'selected' %>>Pilih</option>
+              <option value="L" <%= old.jenisKelamin === 'L' ? 'selected' : '' %>>Laki-laki</option>
+              <option value="P" <%= old.jenisKelamin === 'P' ? 'selected' : '' %>>Perempuan</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="form-label" for="username">Username</label>
+          <div class="input-icon">
+            <i class="bi bi-at"></i>
+            <input class="form-control" id="username" name="username" value="<%= old.username || '' %>" placeholder="minimal 4 karakter" autocomplete="username" required>
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-control" id="password" name="password" type="password" minlength="6" placeholder="min. 6 karakter" autocomplete="new-password" required>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label" for="konfirmasi">Ulangi password</label>
+            <input class="form-control" id="konfirmasi" name="konfirmasi" type="password" minlength="6" autocomplete="new-password" required>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-lg w-100 mt-2" type="submit">Daftar <i class="bi bi-arrow-right"></i></button>
+      </form>
+
+      <p class="text-center text-muted mt-4 mb-0">Sudah punya akun? <a href="/login" class="fw-semibold">Masuk</a></p>
+    </div>
+  </main>
 </div>
 
-<%- include('partials/footer') %>
+<%- include('partials/footer', { layout: 'bare' }) %>

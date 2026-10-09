@@ -1,102 +1,144 @@
 <%- include('../partials/header') %>
-<% const hasil = riwayat.hasil; %>
+<%
+  const hasil = riwayat.hasil;
+  const namaGejala = Object.fromEntries(riwayat.gejala.map(g => [g.kode, g.nama]));
+  const namaPenyakit = Object.fromEntries(hasil.diagnosa.map(d => [d.kode, d.nama]));
+  const tanggal = new Date(riwayat.createdAt);
+%>
 
-<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-  <h3 class="mb-0">Hasil Diagnosa</h3>
-  <div class="no-print">
-    <a href="<%= kembali %>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali</a>
-    <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Cetak</button>
-  </div>
-</div>
-
-<div class="card mb-3">
-  <div class="card-body">
-    <table class="table table-sm table-borderless mb-0 w-auto">
-      <tr><td class="text-muted pe-4">Nama</td><td><%= riwayat.nama %></td></tr>
-      <tr><td class="text-muted pe-4">Umur</td><td><%= riwayat.umur %> tahun</td></tr>
-      <tr><td class="text-muted pe-4">Jenis Kelamin</td><td><%= riwayat.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></td></tr>
-      <tr><td class="text-muted pe-4">Tanggal</td><td><%= new Date(riwayat.createdAt).toLocaleString('id-ID') %></td></tr>
-    </table>
-  </div>
-</div>
-
-<div class="card mb-3">
-  <div class="card-header fw-semibold">Gejala yang Dipilih (Fakta Awal)</div>
-  <ul class="list-group list-group-flush">
-    <% riwayat.gejala.forEach(g => { %>
-      <li class="list-group-item"><span class="badge bg-secondary me-2"><%= g.kode %></span><%= g.nama %></li>
-    <% }) %>
-  </ul>
-</div>
-
-<% if (hasil.diagnosa.length) { %>
-  <% hasil.diagnosa.forEach(d => { %>
-    <div class="card mb-3 border-primary">
-      <div class="card-header bg-primary text-white fw-semibold">
-        Kesimpulan: <%= d.nama %> (<%= d.kode %>)
-      </div>
-      <div class="card-body">
-        <h6>Deskripsi</h6>
-        <p><%= d.deskripsi %></p>
-        <h6>Saran Penanganan</h6>
-        <p class="mb-0"><%= d.solusi %></p>
-      </div>
-    </div>
-  <% }) %>
-<% } else { %>
-  <div class="alert alert-warning">
-    <strong>Tidak ada aturan yang terpenuhi.</strong>
-    Gejala yang dipilih belum cukup untuk menyimpulkan penyakit tertentu berdasarkan basis pengetahuan.
-    Jika keluhan berlanjut, konsultasikan ke dokter.
-  </div>
+<% if (user && user.role === 'pasien') { %>
+  <%- include('../partials/stepper', { langkah: 4 }) %>
 <% } %>
 
-<% if (hasil.parsial.length) { %>
-  <div class="card mb-3">
-    <div class="card-header fw-semibold">Kemungkinan Lain (aturan belum terpenuhi sepenuhnya)</div>
-    <div class="card-body">
-      <% hasil.parsial.forEach(p => { %>
-        <div class="mb-2">
-          <div class="d-flex justify-content-between small">
-            <span><%= p.nama %> (<%= p.rule %>)</span>
-            <span><%= p.cocok %>/<%= p.total %> gejala &middot; <%= p.persen %>%</span>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Hasil Diagnosa</h1>
+    <p class="page-subtitle"><i class="bi bi-calendar3 me-1"></i><%= tanggal.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %>, <%= tanggal.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %></p>
+  </div>
+  <div class="d-flex gap-2 no-print">
+    <a href="<%= kembali %>" class="btn btn-ghost"><i class="bi bi-arrow-left"></i> Kembali</a>
+    <button type="button" onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Cetak</button>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+
+    <% if (hasil.diagnosa.length) { %>
+      <% hasil.diagnosa.forEach((d, i) => { %>
+        <div class="result-hero mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="label"><%= hasil.diagnosa.length > 1 ? 'Kesimpulan ' + (i + 1) : 'Kesimpulan diagnosa' %></span>
+            <span class="badge badge-glass"><%= d.kode %></span>
           </div>
-          <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-warning" style="width: <%= p.persen %>%"></div>
+          <h2><%= d.nama %></h2>
+          <p><%= d.deskripsi %></p>
+        </div>
+        <div class="card mb-4">
+          <div class="card-body solusi-box">
+            <div class="icon-tile tone-teal"><i class="bi bi-heart-pulse"></i></div>
+            <div>
+              <h6 class="fw-bold mb-1">Saran penanganan</h6>
+              <p class="text-muted mb-0"><%= d.solusi %></p>
+            </div>
           </div>
         </div>
       <% }) %>
-      <p class="text-muted small mb-0 mt-2">Bagian ini hanya informasi tambahan, bukan kesimpulan forward chaining.</p>
+    <% } else { %>
+      <div class="card mb-4">
+        <div class="empty-state">
+          <div class="icon-tile lg tone-amber"><i class="bi bi-question-circle"></i></div>
+          <h6>Belum ada penyakit yang dapat disimpulkan</h6>
+          <p class="mb-0 mx-auto" style="max-width: 32rem">Gejala yang dipilih belum memenuhi seluruh syarat aturan mana pun di basis pengetahuan. Jika keluhan berlanjut, segera konsultasikan ke dokter.</p>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (hasil.parsial.length) { %>
+      <div class="card mb-4">
+        <div class="card-header d-flex align-items-center gap-2">
+          <i class="bi bi-activity text-warning"></i> Kemungkinan lain yang perlu diwaspadai
+        </div>
+        <div class="card-body d-flex flex-column gap-3">
+          <% hasil.parsial.forEach(p => { %>
+            <div>
+              <div class="d-flex justify-content-between gap-2 small mb-1">
+                <span class="fw-semibold"><%= p.nama %> <span class="text-muted fw-normal">&middot; <%= p.rule %></span></span>
+                <span class="text-muted text-nowrap"><%= p.cocok %>/<%= p.total %> gejala &middot; <strong style="color: var(--ink)"><%= p.persen %>%</strong></span>
+              </div>
+              <div class="progress" style="height: 8px" role="progressbar" aria-label="Kecocokan <%= p.nama %>" aria-valuenow="<%= p.persen %>" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar" style="width: <%= p.persen %>%"></div>
+              </div>
+            </div>
+          <% }) %>
+          <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i>Persentase ini hanya rasio gejala yang cocok, bukan kesimpulan forward chaining.</p>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <div class="card-header d-flex align-items-center gap-2">
+        <i class="bi bi-diagram-3 text-primary"></i> Jejak penalaran forward chaining
+      </div>
+      <div class="card-body">
+        <% if (hasil.jejak.length) { %>
+          <ol class="timeline">
+            <% hasil.jejak.forEach(j => { %>
+              <li>
+                <div class="tl-meta">Iterasi <%= j.iterasi %> &middot; Aturan <%= j.rule %> terpenuhi</div>
+                <div class="rule-expr">
+                  <span class="kw">IF</span>
+                  <% j.premis.forEach((k, i) => { %>
+                    <% if (i) { %><span class="kw">AND</span><% } %>
+                    <span class="badge badge-code neutral" title="<%= namaGejala[k] || k %>"><%= k %></span>
+                  <% }) %>
+                  <span class="kw">THEN</span>
+                  <span class="badge badge-code" title="<%= namaPenyakit[j.konklusi] || j.konklusi %>"><%= j.konklusi %></span>
+                  <span class="small text-muted"><%= namaPenyakit[j.konklusi] || '' %></span>
+                </div>
+              </li>
+            <% }) %>
+          </ol>
+        <% } else { %>
+          <p class="text-muted mb-0">Tidak ada aturan yang terpenuhi oleh fakta awal.</p>
+        <% } %>
+        <p class="text-muted small mt-3 mb-0">Inferensi berhenti setelah <%= hasil.jumlahIterasi %> iterasi karena tidak ada fakta baru yang dihasilkan.</p>
+      </div>
     </div>
   </div>
-<% } %>
 
-<div class="card mb-3">
-  <div class="card-header fw-semibold">Jejak Penalaran Forward Chaining (Fasilitas Penjelasan)</div>
-  <div class="card-body">
-    <% if (hasil.jejak.length) { %>
-      <div class="table-responsive">
-        <table class="table table-sm table-bordered mb-2">
-          <thead class="table-light"><tr><th>Iterasi</th><th>Aturan</th><th>Premis (IF)</th><th>Konklusi (THEN)</th></tr></thead>
-          <tbody>
-            <% hasil.jejak.forEach(j => { %>
-              <tr>
-                <td><%= j.iterasi %></td>
-                <td><%= j.rule %></td>
-                <td><code><%= j.premis.join(' AND ') %></code></td>
-                <td><code><%= j.konklusi %></code></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="avatar"><%= riwayat.nama.trim().charAt(0).toUpperCase() %></span>
+          <div class="lh-sm">
+            <div class="fw-bold"><%= riwayat.nama %></div>
+            <small class="text-muted">Pasien</small>
+          </div>
+        </div>
+        <dl class="info-list">
+          <dt>Umur</dt><dd><%= riwayat.umur %> tahun</dd>
+          <dt>Kelamin</dt><dd><%= riwayat.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></dd>
+          <dt>No. Hasil</dt><dd>#<%= String(riwayat.id).padStart(5, '0') %></dd>
+        </dl>
       </div>
-    <% } else { %>
-      <p class="mb-2">Tidak ada aturan yang dieksekusi.</p>
-    <% } %>
-    <p class="text-muted small mb-0">Inferensi selesai dalam <%= hasil.jumlahIterasi %> iterasi (berhenti ketika tidak ada fakta baru).</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Gejala dipilih</span>
+        <span class="badge badge-code"><%= riwayat.gejala.length %></span>
+      </div>
+      <div class="card-body d-flex flex-wrap gap-2">
+        <% riwayat.gejala.forEach(g => { %>
+          <span class="chip"><span class="badge badge-code"><%= g.kode %></span><%= g.nama %></span>
+        <% }) %>
+      </div>
+    </div>
+
+    <p class="disclaimer"><i class="bi bi-shield-check"></i>Hasil ini bukan pengganti diagnosis dokter. Bawa hasil cetak saat berkonsultasi.</p>
   </div>
 </div>
-
-<p class="text-muted small"><i class="bi bi-info-circle"></i> Hasil ini bukan pengganti diagnosis dokter.</p>
 
 <%- include('../partials/footer') %>

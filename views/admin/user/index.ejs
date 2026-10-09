@@ -1,30 +1,46 @@
 <%- include('../../partials/header') %>
-<%- include('../../partials/admin-nav') %>
 
-<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">Kelola Akun</h4>
-  <a href="/admin/user/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah Admin/Dokter</a>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Kelola Akun</h1>
+    <p class="page-subtitle">Akun admin dan dokter dibuat di sini. Pasien mendaftar sendiri melalui halaman Daftar.</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <div class="input-icon" style="min-width: min(100%, 15rem)">
+      <i class="bi bi-search"></i>
+      <input type="search" class="form-control" placeholder="Cari akun..." data-filter="#tabelUser" data-filter-empty="#userKosong" aria-label="Cari akun">
+    </div>
+    <a href="/admin/user/tambah" class="btn btn-primary"><i class="bi bi-person-plus"></i> Tambah Akun</a>
+  </div>
 </div>
 
-<div class="card">
+<div class="card card-table">
   <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Nama</th><th>Username</th><th>Role</th><th class="d-none d-md-table-cell">JK</th><th class="d-none d-md-table-cell">Tanggal Lahir</th><th class="text-end">Aksi</th></tr></thead>
-      <tbody>
-        <% const warna = { admin: 'danger', dokter: 'success', pasien: 'secondary' }; %>
+    <table class="table table-modern">
+      <thead>
+        <tr><th>Pengguna</th><th>Role</th><th class="d-none d-md-table-cell">Jenis kelamin</th><th class="d-none d-lg-table-cell">Tanggal lahir</th><th class="text-end">Aksi</th></tr>
+      </thead>
+      <tbody id="tabelUser">
         <% users.forEach(u => { %>
-          <tr>
-            <td><%= u.nama %></td>
-            <td><%= u.username %></td>
-            <td><span class="badge bg-<%= warna[u.role] %> text-capitalize"><%= u.role %></span></td>
-            <td class="d-none d-md-table-cell"><%= u.jenisKelamin || '-' %></td>
-            <td class="d-none d-md-table-cell"><%= u.tanggalLahir ? new Date(u.tanggalLahir).toLocaleDateString('id-ID') : '-' %></td>
+          <tr data-filter-item data-search="<%= u.nama %> <%= u.username %> <%= u.role %>">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="avatar sm <%= u.role === 'pasien' ? 'soft' : '' %>"><%= u.nama.trim().charAt(0).toUpperCase() %></span>
+                <div class="lh-sm">
+                  <div class="cell-title"><%= u.nama %> <% if (u.id === user.id) { %><span class="badge badge-code neutral ms-1">Anda</span><% } %></div>
+                  <div class="cell-sub">@<%= u.username %></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-role <%= u.role %>"><%= u.role %></span></td>
+            <td class="d-none d-md-table-cell"><%= u.jenisKelamin === 'L' ? 'Laki-laki' : u.jenisKelamin === 'P' ? 'Perempuan' : '-' %></td>
+            <td class="d-none d-lg-table-cell text-muted"><%= u.tanggalLahir ? new Date(u.tanggalLahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' %></td>
             <td class="text-end text-nowrap">
-              <a href="/admin/user/<%= u.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+              <a href="/admin/user/<%= u.id %>/edit" class="btn btn-ghost btn-icon btn-sm" aria-label="Edit"><i class="bi bi-pencil"></i></a>
               <% if (u.id !== user.id) { %>
                 <form action="/admin/user/<%= u.id %>?_method=DELETE" method="POST" class="d-inline"
-                      onsubmit="return confirm('Hapus akun <%= u.username %>?')">
-                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                      data-confirm="Akun @<%= u.username %> akan dihapus. Riwayat diagnosanya tetap tersimpan.">
+                  <button class="btn btn-ghost btn-icon btn-sm danger" aria-label="Hapus"><i class="bi bi-trash3"></i></button>
                 </form>
               <% } %>
             </td>
@@ -32,6 +48,10 @@
         <% }) %>
       </tbody>
     </table>
+  </div>
+  <div class="empty-state py-4" id="userKosong" hidden>
+    <h6 class="mb-1">Akun tidak ditemukan</h6>
+    <p class="mb-0 small">Coba kata kunci lain.</p>
   </div>
 </div>
 

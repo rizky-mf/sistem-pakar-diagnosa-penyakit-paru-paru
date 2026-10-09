@@ -1,32 +1,52 @@
 <%- include('../../partials/header') %>
-<%- include('../../partials/dokter-nav') %>
 
-<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-  <h4 class="mb-0">Data Gejala</h4>
-  <a href="/dokter/gejala/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Data Gejala</h1>
+    <p class="page-subtitle">Fakta (premis IF) yang dapat dipilih pasien saat diagnosa.</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <div class="input-icon" style="min-width: min(100%, 15rem)">
+      <i class="bi bi-search"></i>
+      <input type="search" class="form-control" placeholder="Cari gejala..." data-filter="#tabelGejala" data-filter-empty="#gejalaKosong" aria-label="Cari gejala">
+    </div>
+    <a href="/dokter/gejala/tambah" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah</a>
+  </div>
 </div>
 
-<div class="card">
-  <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Kode</th><th>Nama Gejala</th><th class="text-end">Aksi</th></tr></thead>
-      <tbody>
-        <% gejala.forEach(g => { %>
-          <tr>
-            <td><span class="badge bg-secondary"><%= g.kode %></span></td>
-            <td><%= g.nama %></td>
-            <td class="text-end text-nowrap">
-              <a href="/dokter/gejala/<%= g.id %>/edit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
-              <form action="/dokter/gejala/<%= g.id %>?_method=DELETE" method="POST" class="d-inline"
-                    onsubmit="return confirm('Hapus gejala <%= g.kode %>? Gejala ini juga akan dihapus dari semua aturan.')">
-                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+<div class="card card-table">
+  <% if (!gejala.length) { %>
+    <div class="empty-state">
+      <div class="icon-tile lg tone-sky"><i class="bi bi-list-check"></i></div>
+      <h6>Belum ada data gejala</h6>
+      <a href="/dokter/gejala/tambah" class="btn btn-primary btn-sm mt-2">Tambah Gejala</a>
+    </div>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-modern">
+        <thead><tr><th style="width: 7rem">Kode</th><th>Gejala</th><th class="text-end">Aksi</th></tr></thead>
+        <tbody id="tabelGejala">
+          <% gejala.forEach(g => { %>
+            <tr data-filter-item data-search="<%= g.kode %> <%= g.nama %>">
+              <td><span class="badge badge-code neutral"><%= g.kode %></span></td>
+              <td class="fw-semibold"><%= g.nama %></td>
+              <td class="text-end text-nowrap">
+                <a href="/dokter/gejala/<%= g.id %>/edit" class="btn btn-ghost btn-icon btn-sm" aria-label="Edit"><i class="bi bi-pencil"></i></a>
+                <form action="/dokter/gejala/<%= g.id %>?_method=DELETE" method="POST" class="d-inline"
+                      data-confirm="Gejala <%= g.kode %> akan dihapus dan dilepas dari semua aturan yang memakainya.">
+                  <button class="btn btn-ghost btn-icon btn-sm danger" aria-label="Hapus"><i class="bi bi-trash3"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <div class="empty-state py-4" id="gejalaKosong" hidden>
+      <h6 class="mb-1">Gejala tidak ditemukan</h6>
+      <p class="mb-0 small">Coba kata kunci lain.</p>
+    </div>
+  <% } %>
 </div>
 
 <%- include('../../partials/footer') %>
