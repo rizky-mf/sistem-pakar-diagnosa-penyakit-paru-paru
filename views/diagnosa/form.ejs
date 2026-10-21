@@ -4,7 +4,7 @@
 <div class="page-header">
   <div>
     <h1 class="page-title">Pilih gejala yang Anda alami</h1>
-    <p class="page-subtitle">Centang semua gejala yang sesuai. Semakin lengkap, semakin akurat hasil penalaran sistem.</p>
+    <p class="page-subtitle">Untuk setiap gejala, pilih seberapa yakin Anda merasakannya. Biarkan <em>Tidak merasakan</em> bila tidak mengalaminya.</p>
   </div>
 </div>
 
@@ -34,7 +34,7 @@
     <div class="card mt-3 d-none d-lg-block">
       <div class="card-body small text-muted d-flex gap-2">
         <i class="bi bi-lightbulb text-primary"></i>
-        <span>Sistem akan mencocokkan gejala dengan aturan <strong>IF&ndash;THEN</strong> dari pakar. Penyakit disimpulkan jika <em>semua</em> syarat aturannya terpenuhi.</span>
+        <span>Gejala Anda dicocokkan dengan aturan <strong>IF&ndash;THEN</strong> dari pakar (forward chaining). Tingkat kepastian tiap penyakit dihitung dengan <strong>certainty factor</strong> dari keyakinan Anda dan bobot pakar; penyakit dengan nilai tertinggi menjadi hasil diagnosa.</span>
       </div>
     </div>
   </div>
@@ -51,14 +51,17 @@
 
       <div class="row g-2" id="daftarGejala">
         <% gejala.forEach(g => { %>
-          <div class="col-md-6" data-filter-item data-search="<%= g.kode %> <%= g.nama %>">
-            <label class="gejala-card" for="g<%= g.id %>">
-              <input class="form-check-input" type="checkbox" name="gejala" value="<%= g.kode %>" id="g<%= g.id %>"
-                <%= dipilih.includes(g.kode) ? 'checked' : '' %>>
-              <span>
+          <div class="col-xl-6" data-filter-item data-search="<%= g.kode %> <%= g.nama %>">
+            <label class="gejala-card gejala-cf" for="g<%= g.id %>">
+              <span class="flex-grow-1">
                 <span class="gejala-kode"><%= g.kode %></span>
                 <span class="gejala-nama"><%= g.nama %></span>
               </span>
+              <select class="form-select form-select-sm" name="cf_<%= g.kode %>" id="g<%= g.id %>" data-cf-user>
+                <% tingkatKeyakinan.forEach(t => { %>
+                  <option value="<%= t.nilai %>"><%= t.label %></option>
+                <% }) %>
+              </select>
             </label>
           </div>
         <% }) %>
@@ -73,8 +76,8 @@
 
       <div class="action-bar">
         <div class="lh-sm">
-          <span class="count" data-count-checked='#daftarGejala input[name="gejala"]'>0</span>
-          <span class="text-muted small"> gejala dipilih</span>
+          <span class="count" data-count-checked="#daftarGejala [data-cf-user]">0</span>
+          <span class="text-muted small"> gejala dirasakan</span>
         </div>
         <button type="submit" class="btn btn-primary" data-requires-checked>
           Proses Diagnosa <i class="bi bi-arrow-right"></i>

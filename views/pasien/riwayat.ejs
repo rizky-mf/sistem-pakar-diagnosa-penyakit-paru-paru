@@ -17,7 +17,7 @@
       <a href="/diagnosa" class="btn btn-primary btn-sm">Mulai Diagnosa</a>
     </div>
   <% } %>
-  <% riwayat.forEach(r => { const t = new Date(r.createdAt); %>
+  <% riwayat.forEach(r => { const t = new Date(r.tanggalDiagnosa); %>
     <a class="list-item" href="/diagnosa/hasil/<%= r.id %>">
       <div class="date-tile">
         <div class="d"><%= t.getDate() %></div>
@@ -26,13 +26,13 @@
       <div class="flex-grow-1 min-w-0">
         <div class="d-flex flex-wrap gap-1 mb-1">
           <% if (r.hasil.diagnosa.length) { %>
-            <% r.hasil.diagnosa.forEach(d => { %><span class="fw-bold"><%= d.nama %></span><% }) %>
+            <% r.hasil.diagnosa.forEach(d => { %><span class="fw-bold"><%= d.nama %></span><% if (d.persen != null) { %><span class="badge badge-soft ms-1"><%= Number(d.persen).toLocaleString('id-ID') %>%</span><% } %><% }) %>
           <% } else { %>
             <span class="fw-bold text-muted">Tidak ada kesimpulan</span>
           <% } %>
         </div>
         <div class="small text-muted">
-          <%= r.gejala.length %> gejala &middot; <%= t.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %> &middot; <%= t.getFullYear() %>
+          <%= r.gejala.length %> gejala &middot; Diagnosa keluar <%= t.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %>, <%= t.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %>
         </div>
       </div>
       <i class="bi bi-chevron-right text-muted"></i>

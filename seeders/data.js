@@ -2,7 +2,7 @@
  * DATA AWAL BASIS PENGETAHUAN
  *
  * PENTING: Data ini disusun dari literatur umum sebagai CONTOH.
- * Untuk skripsi, seluruh penyakit, gejala, dan aturan WAJIB divalidasi
+ * Untuk skripsi, seluruh penyakit, gejala, aturan, dan nilai CF pakar WAJIB divalidasi
  * oleh pakar (dokter spesialis paru) sebelum digunakan.
  */
 
@@ -102,15 +102,16 @@ const gejala = [
 ];
 
 // IF premis[0] AND premis[1] AND ... THEN penyakit
+// Nilai pada premis adalah CF pakar (0-1): seberapa kuat gejala tersebut mendukung penyakit.
 const rules = [
-  { kode: 'R01', penyakit: 'P01', premis: ['G01', 'G02', 'G08', 'G10', 'G11', 'G12'] },
-  { kode: 'R02', penyakit: 'P02', premis: ['G02', 'G05', 'G07', 'G09', 'G14', 'G15'] },
-  { kode: 'R03', penyakit: 'P03', premis: ['G03', 'G05', 'G06', 'G16', 'G17'] },
-  { kode: 'R04', penyakit: 'P04', premis: ['G05', 'G06', 'G18', 'G19', 'G20'] },
-  { kode: 'R05', penyakit: 'P05', premis: ['G02', 'G08', 'G13', 'G17'] },
-  { kode: 'R06', penyakit: 'P06', premis: ['G01', 'G04', 'G07', 'G11', 'G18', 'G21'] },
-  { kode: 'R07', penyakit: 'P07', premis: ['G03', 'G05', 'G22', 'G23'] },
-  { kode: 'R08', penyakit: 'P08', premis: ['G01', 'G04', 'G05', 'G25'] },
+  { kode: 'R01', penyakit: 'P01', premis: { G01: 0.8, G02: 0.6, G08: 0.4, G10: 0.8, G11: 0.6, G12: 0.4 } },
+  { kode: 'R02', penyakit: 'P02', premis: { G02: 0.4, G05: 0.6, G07: 0.6, G09: 0.8, G14: 0.8, G15: 0.6 } },
+  { kode: 'R03', penyakit: 'P03', premis: { G03: 0.4, G05: 0.6, G06: 0.8, G16: 1.0, G17: 0.6 } },
+  { kode: 'R04', penyakit: 'P04', premis: { G05: 0.6, G06: 0.6, G18: 0.8, G19: 0.8, G20: 0.8 } },
+  { kode: 'R05', penyakit: 'P05', premis: { G02: 0.8, G08: 0.4, G13: 0.4, G17: 0.6 } },
+  { kode: 'R06', penyakit: 'P06', premis: { G01: 0.6, G04: 0.8, G07: 0.6, G11: 0.6, G18: 0.8, G21: 0.8 } },
+  { kode: 'R07', penyakit: 'P07', premis: { G03: 0.4, G05: 0.6, G22: 0.8, G23: 0.8 } },
+  { kode: 'R08', penyakit: 'P08', premis: { G01: 0.6, G04: 0.6, G05: 0.4, G25: 1.0 } },
 ];
 
 // Akun awal untuk setiap aktor

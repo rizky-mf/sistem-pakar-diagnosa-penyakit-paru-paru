@@ -1,7 +1,7 @@
-# Sistem Pakar Diagnosa Penyakit Paru-Paru (Forward Chaining)
+# Sistem Pakar Diagnosa Penyakit Paru-Paru (Forward Chaining & Certainty Factor)
 
 Aplikasi web sistem pakar untuk mendiagnosa penyakit paru-paru berdasarkan gejala
-menggunakan metode **Forward Chaining**.
+menggunakan metode **Forward Chaining** dan **Certainty Factor**.
 
 **Stack:** Node.js, Express, EJS, MySQL (Sequelize), Bootstrap 5
 
@@ -16,10 +16,12 @@ menggunakan metode **Forward Chaining**.
 npm install
 cp .env.example .env      # sesuaikan user/password database
 npm run db:setup          # membuat database, tabel, dan data awal
+# atau, jika database sudah berisi data dari versi sebelumnya:
+npm run db:migrate        # menambah kolom baru tanpa menghapus data
 npm run dev               # jalankan server (auto-restart saat file berubah)
 ```
 
-Buka http://localhost:3000
+Buka http://localhost:3000 (langsung diarahkan ke halaman login)
 
 Akun bawaan (ganti password setelah login pertama):
 
@@ -34,10 +36,10 @@ Akun bawaan (ganti password setelah login pertama):
 | Aktor | Hak akses |
 |---|---|
 | **Admin** | Kelola akun admin/dokter, lihat daftar pasien, lihat & hapus riwayat diagnosa |
-| **Dokter (pakar)** | Kelola basis pengetahuan (penyakit, gejala, aturan), lihat riwayat diagnosa pasien |
-| **Pasien** | Daftar akun, login, melakukan diagnosa, melihat & mencetak hasil, melihat riwayat diagnosanya sendiri |
+| **Dokter (pakar)** | Kelola basis pengetahuan (penyakit, gejala, aturan + CF pakar), lihat riwayat diagnosa pasien |
+| **Pasien** | Daftar akun, login, edit profil, melakukan diagnosa, melihat & mencetak hasil, melihat riwayat diagnosanya sendiri |
 
-Pengunjung yang belum login hanya bisa melihat beranda dan info penyakit.
+Tidak ada beranda publik: pengunjung yang belum login langsung diarahkan ke halaman login.
 
 > `npm run db:setup` **menghapus seluruh data** lalu mengisi ulang data awal.
 
@@ -48,8 +50,10 @@ app.js                      # entry point
 config/database.js          # koneksi Sequelize
 models/index.js             # model + relasi: Penyakit, Gejala, Rule, User, Riwayat
 services/forwardChaining.js # MESIN INFERENSI forward chaining
+services/certaintyFactor.js # perhitungan certainty factor
 seeders/data.js             # data awal penyakit, gejala, aturan
 scripts/setup-db.js         # setup database
+scripts/migrate.js          # migrasi kolom baru tanpa hapus data
 controllers/                # logika halaman (publik/pasien, admin/, dokter/)
 routes/                     # index (publik & pasien), admin, dokter
 middleware/auth.js          # login & pembatasan akses per role
@@ -65,9 +69,9 @@ tests/                      # unit test mesin inferensi (npm test)
 | `penyakit` | id, kode, nama, deskripsi, solusi |
 | `gejala` | id, kode, nama |
 | `rule` | id, kode, penyakit_id |
-| `rule_gejala` | rule_id, gejala_id (premis aturan) |
+| `rule_gejala` | rule_id, gejala_id, cf (premis aturan + CF pakar) |
 | `user` | id, nama, username, password, role (admin/dokter/pasien), jenis_kelamin, tanggal_lahir |
-| `riwayat` | id, user_id, nama, umur, jenis_kelamin, gejala (JSON), hasil (JSON) |
+| `riwayat` | id, user_id, nama, umur, jenis_kelamin, gejala (JSON), hasil (JSON), tanggal_diagnosa (waktu hasil diagnosa keluar) |
 
 ## Cara Kerja Forward Chaining
 
@@ -75,10 +79,28 @@ tests/                      # unit test mesin inferensi (npm test)
 2. Setiap aturan `IF premis THEN konklusi` diperiksa. Jika **semua** premis ada di fakta,
    aturan dieksekusi dan konklusinya ditambahkan ke fakta (working memory).
 3. Langkah 2 diulang sampai tidak ada fakta baru.
-4. Fakta baru yang berupa kode penyakit menjadi **kesimpulan diagnosa**.
+4. Aturan yang terpenuhi dicatat sebagai jejak penalaran; hasil akhir ditentukan oleh nilai certainty factor (lihat bagian berikut).
 
 Jejak penalaran (aturan mana yang dieksekusi pada iterasi ke berapa) ditampilkan pada
 halaman hasil sebagai **fasilitas penjelasan**.
+
+## Cara Kerja Certainty Factor
+
+1. **CF pakar** diisi dokter untuk setiap gejala pada aturan (0–1).
+2. **CF user** dipilih pasien untuk setiap gejala: Tidak merasakan (0), Sedikit yakin (0,4),
+   Cukup yakin (0,6), Yakin (0,8), Sangat yakin (1). Gejala bernilai 0 tidak ikut dihitung.
+3. `CF gejala = CF pakar × CF user`
+4. CF gejala digabung berurutan: `CF kombinasi = CF lama + CF gejala × (1 − CF lama)`
+5. CF dihitung untuk **setiap penyakit yang memiliki minimal satu gejala cocok**
+   (tidak harus semua premis terpenuhi). Penyakit dengan CF tertinggi menjadi
+   **hasil diagnosa**, sisanya ditampilkan sebagai **kemungkinan lain**.
+   Jika satu penyakit punya beberapa aturan, diambil aturan dengan CF tertinggi.
+
+Forward chaining tetap dijalankan untuk menelusuri aturan yang seluruh premisnya
+terpenuhi (ditampilkan sebagai jejak penalaran); kesimpulannya ikut menjadi fakta
+beserta nilai CF-nya bila dipakai aturan berantai.
+
+Tabel perhitungan langkah demi langkah ikut ditampilkan di halaman hasil.
 
 ## Basis Aturan Awal
 
@@ -94,6 +116,6 @@ halaman hasil sebagai **fasilitas penjelasan**.
 | R08 | G01, G04, G05, G25 | P08 Bronkiektasis |
 
 > **Penting:** data penyakit, gejala, dan aturan di atas disusun dari literatur umum sebagai
-> contoh. Untuk skripsi, seluruhnya **wajib divalidasi oleh pakar** (dokter spesialis paru).
+> contoh, termasuk nilai CF pakar di `seeders/data.js`. Untuk skripsi, seluruhnya **wajib divalidasi oleh pakar** (dokter spesialis paru).
 > Setelah divalidasi, ubah di `seeders/data.js` lalu jalankan `npm run db:setup`,
 > atau ubah langsung lewat halaman admin.

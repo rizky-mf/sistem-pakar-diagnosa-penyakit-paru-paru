@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { User } = require('../models');
 const { berandaRole } = require('../middleware/auth');
+const { validasiDataPasien } = require('./helpers');
 
 exports.loginForm = (req, res) => {
   res.render('login', { title: 'Login' });
@@ -38,14 +39,9 @@ exports.register = async (req, res, next) => {
     const username = (req.body.username || '').trim();
     const { password, konfirmasi, jenisKelamin, tanggalLahir } = req.body;
 
-    const errors = [];
-    if (!nama) errors.push('Nama wajib diisi.');
-    if (!/^[a-zA-Z0-9_.]{4,50}$/.test(username)) errors.push('Username 4-50 karakter (huruf, angka, titik, garis bawah).');
+    const errors = validasiDataPasien({ nama, username, jenisKelamin, tanggalLahir });
     if (!password || password.length < 6) errors.push('Password minimal 6 karakter.');
     if (password !== konfirmasi) errors.push('Konfirmasi password tidak sama.');
-    if (!['L', 'P'].includes(jenisKelamin)) errors.push('Jenis kelamin wajib dipilih.');
-    const lahir = new Date(tanggalLahir);
-    if (!tanggalLahir || isNaN(lahir) || lahir > new Date()) errors.push('Tanggal lahir tidak valid.');
     if (!errors.length && (await User.findOne({ where: { username } }))) errors.push('Username sudah digunakan.');
 
     if (errors.length) {

@@ -66,12 +66,12 @@
                   </td>
                   <td>
                     <% if (r.hasil.diagnosa.length) { %>
-                      <% r.hasil.diagnosa.forEach(d => { %><span class="badge badge-soft me-1"><%= d.nama %></span><% }) %>
+                      <% r.hasil.diagnosa.forEach(d => { %><span class="badge badge-soft me-1"><%= d.nama %><% if (d.persen != null) { %> &middot; <%= Number(d.persen).toLocaleString('id-ID') %>%<% } %></span><% }) %>
                     <% } else { %>
                       <span class="text-muted small">Tidak ada kesimpulan</span>
                     <% } %>
                   </td>
-                  <td class="d-none d-md-table-cell text-muted small text-nowrap"><%= new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                  <td class="d-none d-md-table-cell text-muted small text-nowrap"><%= new Date(r.tanggalDiagnosa).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></td>
                   <td class="text-end"><a href="<%= base %>/riwayat/<%= r.id %>" class="btn btn-ghost btn-icon btn-sm" aria-label="Lihat detail"><i class="bi bi-arrow-up-right"></i></a></td>
                 </tr>
               <% }) %>

@@ -32,6 +32,11 @@ const Rule = sequelize.define('rule', {
   kode: { type: DataTypes.STRING(10), allowNull: false, unique: true },
 });
 
+// Premis aturan beserta CF pakar (bobot keyakinan gejala terhadap penyakit, 0-1)
+const RuleGejala = sequelize.define('rule_gejala', {
+  cf: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 1, validate: { min: 0, max: 1 } },
+});
+
 // Aktor: admin (kelola akun & sistem), dokter (pakar, kelola basis pengetahuan), pasien (diagnosa)
 const User = sequelize.define('user', {
   nama: { type: DataTypes.STRING(100), allowNull: false },
@@ -60,17 +65,19 @@ const Riwayat = sequelize.define('riwayat', {
   jenisKelamin: { type: DataTypes.ENUM('L', 'P'), allowNull: false },
   gejala: jsonColumn('gejala'), // snapshot gejala yang dipilih
   hasil: jsonColumn('hasil'), // snapshot hasil inferensi + jejak penalaran
+  // Waktu hasil diagnosa keluar setelah proses inferensi selesai
+  tanggalDiagnosa: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
 });
 
 // Relasi
 Penyakit.hasMany(Rule, { foreignKey: 'penyakitId', onDelete: 'CASCADE' });
 Rule.belongsTo(Penyakit, { foreignKey: 'penyakitId' });
 
-Rule.belongsToMany(Gejala, { through: 'rule_gejala', foreignKey: 'ruleId', otherKey: 'gejalaId' });
-Gejala.belongsToMany(Rule, { through: 'rule_gejala', foreignKey: 'gejalaId', otherKey: 'ruleId' });
+Rule.belongsToMany(Gejala, { through: RuleGejala, foreignKey: 'ruleId', otherKey: 'gejalaId' });
+Gejala.belongsToMany(Rule, { through: RuleGejala, foreignKey: 'gejalaId', otherKey: 'ruleId' });
 
 // Riwayat tetap disimpan (sebagai snapshot) walaupun akun pasien dihapus
 User.hasMany(Riwayat, { foreignKey: 'userId', onDelete: 'SET NULL' });
 Riwayat.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = { sequelize, Penyakit, Gejala, Rule, User, Riwayat, hitungUmur };
+module.exports = { sequelize, Penyakit, Gejala, Rule, RuleGejala, User, Riwayat, hitungUmur };

@@ -1,20 +1,33 @@
-const { sequelize, Rule, Penyakit, Gejala } = require('../../models');
+const { sequelize, Rule, RuleGejala, Penyakit, Gejala } = require('../../models');
 const { pesanError } = require('../helpers');
 
 function ambilInput(body) {
   let gejalaIds = body.gejala || [];
   if (!Array.isArray(gejalaIds)) gejalaIds = [gejalaIds];
+  gejalaIds = gejalaIds.map(Number).filter(Boolean);
   return {
     kode: (body.kode || '').trim().toUpperCase(),
     penyakitId: parseInt(body.penyakitId, 10),
-    gejalaIds: gejalaIds.map(Number).filter(Boolean),
+    gejalaIds,
+    // CF pakar tiap premis dikirim sebagai cf_<id gejala>
+    cf: Object.fromEntries(gejalaIds.map((id) => [id, parseFloat(body[`cf_${id}`])])),
   };
+}
+
+// Mengganti seluruh premis aturan beserta CF pakarnya
+async function simpanPremis(ruleId, data, transaction) {
+  await RuleGejala.destroy({ where: { ruleId }, transaction });
+  await RuleGejala.bulkCreate(
+    data.gejalaIds.map((gejalaId) => ({ ruleId, gejalaId, cf: data.cf[gejalaId] })),
+    { transaction }
+  );
 }
 
 function validasi(data) {
   if (!data.kode) return 'Kode aturan wajib diisi.';
   if (!data.penyakitId) return 'Penyakit (THEN) wajib dipilih.';
   if (data.gejalaIds.length === 0) return 'Pilih minimal satu gejala (IF).';
+  if (Object.values(data.cf).some((cf) => !(cf > 0 && cf <= 1))) return 'Nilai CF pakar harus di antara 0 dan 1.';
   return null;
 }
 
@@ -42,7 +55,7 @@ exports.create = async (req, res, next) => {
   try {
     res.render('dokter/rule/form', {
       title: 'Tambah Aturan',
-      item: { gejalaIds: [] },
+      item: { gejalaIds: [], cf: {} },
       action: '/dokter/rule',
       ...(await dataForm()),
     });
@@ -61,7 +74,7 @@ exports.store = async (req, res) => {
   try {
     await sequelize.transaction(async (t) => {
       const rule = await Rule.create({ kode: data.kode, penyakitId: data.penyakitId }, { transaction: t });
-      await rule.setGejalas(data.gejalaIds, { transaction: t });
+      await simpanPremis(rule.id, data, t);
     });
     req.flash('success', 'Aturan berhasil ditambahkan.');
     res.redirect('/dokter/rule');
@@ -77,7 +90,12 @@ exports.edit = async (req, res, next) => {
     if (!rule) return res.redirect('/dokter/rule');
     res.render('dokter/rule/form', {
       title: 'Edit Aturan',
-      item: { kode: rule.kode, penyakitId: rule.penyakitId, gejalaIds: rule.gejalas.map((g) => g.id) },
+      item: {
+        kode: rule.kode,
+        penyakitId: rule.penyakitId,
+        gejalaIds: rule.gejalas.map((g) => g.id),
+        cf: Object.fromEntries(rule.gejalas.map((g) => [g.id, g.rule_gejala.cf])),
+      },
       action: `/dokter/rule/${rule.id}?_method=PUT`,
       ...(await dataForm()),
     });
@@ -98,7 +116,7 @@ exports.update = async (req, res) => {
     if (!rule) return res.redirect('/dokter/rule');
     await sequelize.transaction(async (t) => {
       await rule.update({ kode: data.kode, penyakitId: data.penyakitId }, { transaction: t });
-      await rule.setGejalas(data.gejalaIds, { transaction: t });
+      await simpanPremis(rule.id, data, t);
     });
     req.flash('success', 'Aturan berhasil diperbarui.');
     res.redirect('/dokter/rule');

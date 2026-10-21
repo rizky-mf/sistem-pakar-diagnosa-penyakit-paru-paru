@@ -23,7 +23,7 @@ async function buatDatabase() {
 async function main() {
   await buatDatabase();
 
-  const { sequelize, Penyakit, Gejala, Rule, User } = require('../models');
+  const { sequelize, Penyakit, Gejala, Rule, RuleGejala, User } = require('../models');
   const data = require('../seeders/data');
 
   await sequelize.sync({ force: true });
@@ -36,7 +36,9 @@ async function main() {
 
   for (const r of data.rules) {
     const rule = await Rule.create({ kode: r.kode, penyakitId: penyakitByKode[r.penyakit].id });
-    await rule.setGejalas(r.premis.map((k) => gejalaByKode[k]));
+    await RuleGejala.bulkCreate(
+      Object.entries(r.premis).map(([k, cf]) => ({ ruleId: rule.id, gejalaId: gejalaByKode[k].id, cf }))
+    );
   }
 
   for (const u of data.users) {

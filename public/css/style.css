@@ -208,9 +208,16 @@ code {
 .form-control,
 .form-select {
   border-radius: 0.7rem;
-  padding: 0.65rem 0.9rem;
+  /* Sisakan ruang kanan untuk ikon panah agar tidak menimpa teks */
+  padding: 0.65rem 2.5rem 0.65rem 0.9rem;
+  background-position: right 0.9rem center;
   border-color: var(--line);
   background-color: var(--surface);
+}
+
+.form-select-sm {
+  padding: 0.45rem 2.25rem 0.45rem 0.75rem;
+  background-position: right 0.75rem center;
 }
 
 .form-control:focus,
@@ -1120,6 +1127,51 @@ code {
 
 .gejala-card:has(input:focus-visible) {
   box-shadow: 0 0 0 0.25rem rgba(var(--brand-rgb), 0.25);
+}
+
+/* Kartu gejala dengan dropdown keyakinan pasien (CF user) */
+.gejala-card.gejala-cf {
+  align-items: center;
+  cursor: default;
+}
+
+.gejala-card.gejala-cf .form-select {
+  width: auto;
+  min-width: 11.5rem;
+  flex-shrink: 0;
+}
+
+.gejala-card:has([data-cf-user] option:not([value="0"]):checked) {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.1);
+}
+
+@media (max-width: 575.98px) {
+  .gejala-card.gejala-cf {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gejala-card.gejala-cf .form-select {
+    width: 100%;
+  }
+}
+
+/* Isian CF pakar hanya tampil saat gejala dicentang */
+.gejala-card .cf-field {
+  display: none;
+  margin-top: 0.5rem;
+  max-width: 12rem;
+  cursor: auto;
+}
+
+.gejala-card:has(input:checked) .cf-field {
+  display: block;
+}
+
+.gejala-card:has(input:checked) .cf-field.input-group {
+  display: flex;
 }
 
 .gejala-kode {

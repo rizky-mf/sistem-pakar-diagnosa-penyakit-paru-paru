@@ -88,7 +88,6 @@
           <% }) %>
         </nav>
         <div class="mt-auto pt-4 d-flex flex-column gap-1">
-          <a class="side-link" href="/"><i class="bi bi-house"></i>Lihat Beranda</a>
           <form action="/logout" method="POST">
             <button class="side-link danger" type="submit"><i class="bi bi-box-arrow-left"></i>Keluar</button>
           </form>
@@ -112,8 +111,6 @@
             <i class="bi bi-chevron-down small text-muted"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="/"><i class="bi bi-house"></i>Beranda</a></li>
-            <li><hr class="dropdown-divider"></li>
             <li>
               <form action="/logout" method="POST">
                 <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right"></i>Keluar</button>
@@ -145,6 +142,7 @@
             <% if (role === 'pasien') { %>
               <li><a class="dropdown-item" href="/diagnosa"><i class="bi bi-clipboard2-pulse"></i>Diagnosa Baru</a></li>
               <li><a class="dropdown-item" href="/riwayat-saya"><i class="bi bi-clock-history"></i>Riwayat Saya</a></li>
+              <li><a class="dropdown-item" href="/profil"><i class="bi bi-person-gear"></i>Edit Profil</a></li>
             <% } else { %>
               <li><a class="dropdown-item" href="/<%= role %>"><i class="bi bi-grid-1x2"></i>Panel <span class="text-capitalize"><%= role %></span></a></li>
             <% } %>
@@ -167,10 +165,10 @@
 
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav mx-lg-auto gap-lg-1">
-        <li class="nav-item"><a class="nav-link <%= currentPath === '/' ? 'active' : '' %>" href="/">Beranda</a></li>
         <% if (role === 'pasien') { %>
           <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/diagnosa') ? 'active' : '' %>" href="/diagnosa">Diagnosa</a></li>
           <li class="nav-item"><a class="nav-link <%= currentPath === '/riwayat-saya' ? 'active' : '' %>" href="/riwayat-saya">Riwayat Saya</a></li>
+          <li class="nav-item"><a class="nav-link <%= currentPath === '/profil' ? 'active' : '' %>" href="/profil">Profil</a></li>
         <% } %>
         <li class="nav-item"><a class="nav-link <%= currentPath === '/penyakit' ? 'active' : '' %>" href="/penyakit">Info Penyakit</a></li>
         <% if (role === 'admin' || role === 'dokter') { %>

@@ -4,7 +4,7 @@
   <div>
     <a href="/dokter/rule" class="small text-muted text-decoration-none"><i class="bi bi-arrow-left"></i> Aturan</a>
     <h1 class="page-title mt-1"><%= title %></h1>
-    <p class="page-subtitle">Penyakit disimpulkan jika <strong>semua</strong> gejala yang dipilih terpenuhi.</p>
+    <p class="page-subtitle">Pilih gejala pendukung penyakit dan isi <strong>CF pakar</strong> (0,01&ndash;1) untuk tiap gejala: seberapa kuat gejala tersebut mendukung penyakit. Semakin banyak gejala yang dirasakan pasien, semakin tinggi CF penyakit.</p>
   </div>
 </div>
 
@@ -54,9 +54,14 @@
                 <label class="gejala-card" for="g<%= g.id %>">
                   <input class="form-check-input" type="checkbox" name="gejala" value="<%= g.id %>" id="g<%= g.id %>"
                     <%= item.gejalaIds.includes(g.id) ? 'checked' : '' %>>
-                  <span>
+                  <span class="flex-grow-1">
                     <span class="gejala-kode"><%= g.kode %></span>
                     <span class="gejala-nama"><%= g.nama %></span>
+                    <span class="cf-field input-group input-group-sm">
+                      <span class="input-group-text">CF pakar</span>
+                      <input class="form-control" type="number" name="cf_<%= g.id %>" min="0.01" max="1" step="0.01"
+                        value="<%= item.cf[g.id] != null ? item.cf[g.id] : 0.8 %>" aria-label="CF pakar <%= g.nama %>">
+                    </span>
                   </span>
                 </label>
               </div>

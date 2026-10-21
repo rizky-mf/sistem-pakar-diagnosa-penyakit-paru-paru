@@ -8,7 +8,7 @@ exports.index = async (req, res, next) => {
       Gejala.count(),
       Rule.count(),
       Riwayat.count(),
-      Riwayat.findAll({ order: [['createdAt', 'DESC']], limit: 5 }),
+      Riwayat.findAll({ order: [['tanggalDiagnosa', 'DESC']], limit: 5 }),
       distribusiDiagnosa(),
     ]);
     res.render('dashboard', {

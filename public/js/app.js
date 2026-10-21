@@ -74,19 +74,24 @@
     });
   });
 
-  // ---------- Hitung checkbox terpilih: <span data-count-checked="selector"> ----------
+  // ---------- Hitung pilihan: <span data-count-checked="selector"> ----------
+  // Menghitung checkbox yang dicentang atau dropdown yang nilainya lebih dari 0
+  const terpilih = (el) => (el.type === 'checkbox' ? el.checked : parseFloat(el.value) > 0);
   document.querySelectorAll('[data-count-checked]').forEach((penghitung) => {
     const kotak = document.querySelectorAll(penghitung.dataset.countChecked);
     const tombol = document.querySelector('[data-requires-checked]');
     const perbarui = () => {
-      const jumlah = [...kotak].filter((k) => k.checked).length;
+      const jumlah = [...kotak].filter(terpilih).length;
       penghitung.textContent = jumlah;
       if (tombol) tombol.disabled = jumlah === 0;
     };
     kotak.forEach((k) => k.addEventListener('change', perbarui));
     document.querySelectorAll('[data-uncheck-all]').forEach((btn) =>
       btn.addEventListener('click', () => {
-        kotak.forEach((k) => (k.checked = false));
+        kotak.forEach((k) => {
+          if (k.type === 'checkbox') k.checked = false;
+          else k.selectedIndex = 0;
+        });
         perbarui();
       })
     );

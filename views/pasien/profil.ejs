@@ -1,0 +1,91 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Profil Saya</h1>
+    <p class="page-subtitle">Perbarui data diri Anda. Perubahan berlaku untuk diagnosa berikutnya; hasil diagnosa lama tetap tersimpan apa adanya.</p>
+  </div>
+</div>
+
+<% if (errors.length) { %>
+  <div class="alert alert-danger small">
+    <ul class="mb-0 ps-3"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
+  </div>
+<% } %>
+
+<form action="/profil" method="POST">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center gap-2"><i class="bi bi-person-vcard text-primary"></i> Data diri</div>
+        <div class="card-body d-flex flex-column gap-3">
+          <div>
+            <label class="form-label" for="nama">Nama Lengkap</label>
+            <input class="form-control" id="nama" name="nama" value="<%= old.nama || '' %>" autocomplete="name" required>
+          </div>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label" for="tanggalLahir">Tanggal Lahir</label>
+              <input class="form-control" id="tanggalLahir" name="tanggalLahir" type="date" value="<%= old.tanggalLahir || '' %>" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label" for="jenisKelamin">Jenis Kelamin</label>
+              <select class="form-select" id="jenisKelamin" name="jenisKelamin" required>
+                <option value="" disabled <%= old.jenisKelamin ? '' : 'selected' %>>Pilih</option>
+                <option value="L" <%= old.jenisKelamin === 'L' ? 'selected' : '' %>>Laki-laki</option>
+                <option value="P" <%= old.jenisKelamin === 'P' ? 'selected' : '' %>>Perempuan</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="form-label" for="username">Username</label>
+            <div class="input-icon">
+              <i class="bi bi-at"></i>
+              <input class="form-control" id="username" name="username" value="<%= old.username || '' %>" autocomplete="username" required>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center gap-2"><i class="bi bi-shield-lock text-primary"></i> Ganti kata sandi</div>
+        <div class="card-body d-flex flex-column gap-3">
+          <p class="small text-muted mb-0">Kosongkan bila tidak ingin mengganti kata sandi.</p>
+          <div>
+            <label class="form-label" for="passwordLama">Kata Sandi Lama</label>
+            <div class="input-icon has-action">
+              <i class="bi bi-lock"></i>
+              <input class="form-control" id="passwordLama" name="passwordLama" type="password" autocomplete="current-password">
+              <button type="button" class="input-action" data-toggle-password="#passwordLama" aria-label="Tampilkan kata sandi"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label" for="passwordBaru">Kata Sandi Baru</label>
+            <div class="input-icon has-action">
+              <i class="bi bi-lock"></i>
+              <input class="form-control" id="passwordBaru" name="passwordBaru" type="password" minlength="6" placeholder="Minimal 6 karakter" autocomplete="new-password">
+              <button type="button" class="input-action" data-toggle-password="#passwordBaru" aria-label="Tampilkan kata sandi"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label" for="konfirmasi">Ulangi Kata Sandi Baru</label>
+            <div class="input-icon has-action">
+              <i class="bi bi-lock"></i>
+              <input class="form-control" id="konfirmasi" name="konfirmasi" type="password" minlength="6" autocomplete="new-password">
+              <button type="button" class="input-action" data-toggle-password="#konfirmasi" aria-label="Tampilkan kata sandi"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-4">
+    <a href="/diagnosa" class="btn btn-ghost">Batal</a>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> Simpan Perubahan</button>
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

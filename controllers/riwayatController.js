@@ -1,9 +1,10 @@
 // Dipakai bersama oleh admin dan dokter (path dasar dari req.baseUrl)
 const { Riwayat } = require('../models');
+const { TINGKAT_KEYAKINAN } = require('../services/certaintyFactor');
 
 exports.index = async (req, res, next) => {
   try {
-    const riwayat = await Riwayat.findAll({ order: [['createdAt', 'DESC']] });
+    const riwayat = await Riwayat.findAll({ order: [['tanggalDiagnosa', 'DESC']] });
     res.render('riwayat/index', { title: 'Riwayat Diagnosa', riwayat });
   } catch (err) {
     next(err);
@@ -14,7 +15,12 @@ exports.show = async (req, res, next) => {
   try {
     const riwayat = await Riwayat.findByPk(req.params.id);
     if (!riwayat) return res.redirect(`${req.baseUrl}/riwayat`);
-    res.render('diagnosa/hasil', { title: 'Detail Riwayat', riwayat, kembali: `${req.baseUrl}/riwayat` });
+    res.render('diagnosa/hasil', {
+      title: 'Detail Riwayat',
+      riwayat,
+      kembali: `${req.baseUrl}/riwayat`,
+      tingkatKeyakinan: TINGKAT_KEYAKINAN,
+    });
   } catch (err) {
     next(err);
   }

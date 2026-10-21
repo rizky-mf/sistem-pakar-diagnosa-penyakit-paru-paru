@@ -2,7 +2,7 @@
 const BERANDA = { admin: '/admin', dokter: '/dokter', pasien: '/diagnosa' };
 
 function berandaRole(role) {
-  return BERANDA[role] || '/';
+  return BERANDA[role] || '/login';
 }
 
 function requireLogin(req, res, next) {
