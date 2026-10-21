@@ -1,17 +1,36 @@
 <%- include('../../partials/header') %>
+<%
+  // denganGejala: form tambah penyakit sekaligus memilih/menambah gejalanya (menjadi satu aturan)
+  const paket = typeof denganGejala !== 'undefined' && denganGejala;
+  const pesanError = typeof errorForm !== 'undefined' ? errorForm : null;
+%>
 
 <div class="page-header">
   <div>
     <a href="/dokter/penyakit" class="small text-muted text-decoration-none"><i class="bi bi-arrow-left"></i> Data Penyakit</a>
     <h1 class="page-title mt-1"><%= title %></h1>
+    <% if (paket) { %>
+      <p class="page-subtitle">Isi data penyakit sekaligus gejala-gejalanya. Sistem otomatis membuat aturan <code>IF gejala AND ... THEN penyakit</code> beserta CF pakar.</p>
+    <% } %>
   </div>
 </div>
 
-<div class="row">
-  <div class="col-xl-9">
-    <div class="card">
-      <div class="card-body p-4">
-        <form action="<%= action %>" method="POST">
+<%- include('../../partials/info-usulan') %>
+
+<% if (pesanError) { %>
+  <div class="alert alert-danger d-flex gap-2 align-items-center small">
+    <i class="bi bi-exclamation-circle-fill"></i><span><%= pesanError %></span>
+  </div>
+<% } %>
+
+<form action="<%= action %>" method="POST">
+  <% if (paket) { %><input type="hidden" name="paket" value="1"><% } %>
+
+  <div class="row g-4">
+    <div class="<%= paket ? 'col-12' : 'col-xl-9' %>">
+      <div class="card">
+        <% if (paket) { %><div class="card-header">Data penyakit</div><% } %>
+        <div class="card-body p-4">
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label" for="kode">Kode</label>
@@ -30,15 +49,78 @@
               <textarea class="form-control" id="solusi" name="solusi" rows="4" placeholder="Saran penanganan yang ditampilkan ke pasien" required><%= item.solusi || '' %></textarea>
             </div>
           </div>
-          <hr class="my-4">
-          <div class="d-flex gap-2 justify-content-end">
-            <a href="/dokter/penyakit" class="btn btn-ghost">Batal</a>
-            <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <% if (paket) { %>
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
+            <span>Gejala penyakit ini <span class="text-muted fw-normal">(<span data-count-checked='#daftarGejala input[name="gejala"]'>0</span> dipilih)</span></span>
+            <div class="input-icon" style="min-width: min(100%, 14rem)">
+              <i class="bi bi-search"></i>
+              <input type="search" class="form-control form-control-sm" placeholder="Cari gejala..." data-filter="#daftarGejala" aria-label="Cari gejala">
+            </div>
           </div>
-        </form>
+          <div class="card-body">
+            <p class="small text-muted">Centang gejala yang sudah ada dan isi <strong>CF pakar</strong> (0,01&ndash;1): seberapa kuat gejala tersebut mendukung penyakit ini.</p>
+            <div class="row g-2" id="daftarGejala">
+              <% gejala.forEach(g => { %>
+                <div class="col-md-6" data-filter-item data-search="<%= g.kode %> <%= g.nama %>">
+                  <label class="gejala-card" for="g<%= g.id %>">
+                    <input class="form-check-input" type="checkbox" name="gejala" value="<%= g.id %>" id="g<%= g.id %>"
+                      <%= item.gejalaIds.includes(g.id) ? 'checked' : '' %>>
+                    <span class="flex-grow-1">
+                      <span class="gejala-kode"><%= g.kode %></span>
+                      <span class="gejala-nama"><%= g.nama %></span>
+                      <span class="cf-field input-group input-group-sm">
+                        <span class="input-group-text">CF pakar</span>
+                        <input class="form-control" type="number" name="cf_<%= g.id %>" min="0.01" max="1" step="0.01"
+                          value="<%= item.cf[g.id] != null ? item.cf[g.id] : 0.8 %>" aria-label="CF pakar <%= g.nama %>">
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              <% }) %>
+            </div>
+
+            <hr class="my-4">
+            <h6 class="fw-bold mb-1">Gejala baru</h6>
+            <p class="small text-muted">Tambahkan gejala yang belum ada di daftar. Kodenya dibuat otomatis saat disimpan<%= isKetua ? '' : ' / disetujui' %>.</p>
+            <div id="gejalaBaru">
+              <% item.gejalaBaru.forEach(g => { %>
+                <div class="row g-2 align-items-center mb-2" data-baris>
+                  <div class="col"><input class="form-control" name="gejalaBaruNama" value="<%= g.nama %>" placeholder="Nama gejala baru" aria-label="Nama gejala baru"></div>
+                  <div class="col-auto" style="width: 9rem">
+                    <div class="input-group"><span class="input-group-text">CF</span><input class="form-control" type="number" name="gejalaBaruCf" min="0.01" max="1" step="0.01" value="<%= g.cf %>" aria-label="CF pakar gejala baru"></div>
+                  </div>
+                  <div class="col-auto"><button type="button" class="btn btn-ghost btn-icon danger" data-hapus-baris aria-label="Hapus baris"><i class="bi bi-x-lg"></i></button></div>
+                </div>
+              <% }) %>
+            </div>
+            <template id="tplGejalaBaru">
+              <div class="row g-2 align-items-center mb-2" data-baris>
+                <div class="col"><input class="form-control" name="gejalaBaruNama" placeholder="Nama gejala baru" aria-label="Nama gejala baru" required></div>
+                <div class="col-auto" style="width: 9rem">
+                  <div class="input-group"><span class="input-group-text">CF</span><input class="form-control" type="number" name="gejalaBaruCf" min="0.01" max="1" step="0.01" value="0.8" aria-label="CF pakar gejala baru" required></div>
+                </div>
+                <div class="col-auto"><button type="button" class="btn btn-ghost btn-icon danger" data-hapus-baris aria-label="Hapus baris"><i class="bi bi-x-lg"></i></button></div>
+              </div>
+            </template>
+            <button type="button" class="btn btn-ghost btn-sm" data-tambah-baris="#tplGejalaBaru" data-tujuan="#gejalaBaru"><i class="bi bi-plus-lg"></i> Tambah gejala baru</button>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="<%= paket ? 'col-12' : 'col-xl-9' %>">
+      <div class="d-flex gap-2 justify-content-end">
+        <a href="/dokter/penyakit" class="btn btn-ghost">Batal</a>
+        <button class="btn btn-primary" type="submit"><i class="bi <%= isKetua ? 'bi-check-lg' : 'bi-send' %>"></i> <%= isKetua ? 'Simpan' : 'Kirim Usulan' %></button>
       </div>
     </div>
   </div>
-</div>
+</form>
 
 <%- include('../../partials/footer') %>

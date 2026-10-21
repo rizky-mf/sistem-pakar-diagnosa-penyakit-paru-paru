@@ -1,10 +1,11 @@
 // Dipakai bersama oleh admin dan dokter (path dasar dari req.baseUrl)
-const { Riwayat } = require('../models');
+const { Riwayat, detailRiwayat } = require('../models');
 const { TINGKAT_KEYAKINAN } = require('../services/certaintyFactor');
+const { dataHasil } = require('./helpers');
 
 exports.index = async (req, res, next) => {
   try {
-    const riwayat = await Riwayat.findAll({ order: [['tanggalDiagnosa', 'DESC']] });
+    const riwayat = await Riwayat.findAll(detailRiwayat);
     res.render('riwayat/index', { title: 'Riwayat Diagnosa', riwayat });
   } catch (err) {
     next(err);
@@ -13,11 +14,12 @@ exports.index = async (req, res, next) => {
 
 exports.show = async (req, res, next) => {
   try {
-    const riwayat = await Riwayat.findByPk(req.params.id);
+    const riwayat = await Riwayat.findByPk(req.params.id, detailRiwayat);
     if (!riwayat) return res.redirect(`${req.baseUrl}/riwayat`);
     res.render('diagnosa/hasil', {
       title: 'Detail Riwayat',
       riwayat,
+      ...(await dataHasil(riwayat)),
       kembali: `${req.baseUrl}/riwayat`,
       tingkatKeyakinan: TINGKAT_KEYAKINAN,
     });

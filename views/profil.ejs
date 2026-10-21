@@ -1,9 +1,9 @@
-<%- include('../partials/header') %>
+<%- include('partials/header') %>
 
 <div class="page-header">
   <div>
     <h1 class="page-title">Profil Saya</h1>
-    <p class="page-subtitle">Perbarui data diri Anda. Perubahan berlaku untuk diagnosa berikutnya; hasil diagnosa lama tetap tersimpan apa adanya.</p>
+    <p class="page-subtitle">Perbarui data akun Anda<%= dataPasien ? '. Nama, jenis kelamin, dan tanggal lahir ini tampil pada hasil diagnosa Anda.' : '.' %></p>
   </div>
 </div>
 
@@ -23,6 +23,7 @@
             <label class="form-label" for="nama">Nama Lengkap</label>
             <input class="form-control" id="nama" name="nama" value="<%= old.nama || '' %>" autocomplete="name" required>
           </div>
+          <% if (dataPasien) { %>
           <div class="row g-3">
             <div class="col-sm-6">
               <label class="form-label" for="tanggalLahir">Tanggal Lahir</label>
@@ -37,6 +38,7 @@
               </select>
             </div>
           </div>
+          <% } %>
           <div>
             <label class="form-label" for="username">Username</label>
             <div class="input-icon">
@@ -83,9 +85,9 @@
   </div>
 
   <div class="d-flex justify-content-end gap-2 mt-4">
-    <a href="/diagnosa" class="btn btn-ghost">Batal</a>
+    <a href="<%= kembali %>" class="btn btn-ghost">Batal</a>
     <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> Simpan Perubahan</button>
   </div>
 </form>
 
-<%- include('../partials/footer') %>
+<%- include('partials/footer') %>

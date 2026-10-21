@@ -110,6 +110,22 @@
     });
   });
 
+  // ---------- Baris dinamis: <button data-tambah-baris="#template" data-tujuan="#wadah"> ----------
+  document.querySelectorAll('[data-tambah-baris]').forEach((btn) => {
+    const template = document.querySelector(btn.dataset.tambahBaris);
+    const tujuan = document.querySelector(btn.dataset.tujuan);
+    if (!template || !tujuan) return;
+    btn.addEventListener('click', () => {
+      tujuan.appendChild(template.content.cloneNode(true));
+      const input = tujuan.lastElementChild && tujuan.lastElementChild.querySelector('input');
+      if (input) input.focus();
+    });
+  });
+  document.addEventListener('click', (e) => {
+    const hapus = e.target.closest('[data-hapus-baris]');
+    if (hapus) hapus.closest('[data-baris]').remove();
+  });
+
   // ---------- Modal detail penyakit ----------
   const modalDetail = document.getElementById('detailModal');
   if (modalDetail) {

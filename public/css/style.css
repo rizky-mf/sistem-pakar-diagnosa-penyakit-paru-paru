@@ -1797,6 +1797,111 @@ code {
 .gap-row { row-gap: 1.5rem; }
 
 /* ---------- Cetak ---------- */
+/* ---------- Lembar cetak hasil diagnosa ---------- */
+.surat-cetak {
+  position: relative;
+  color: #1f2937;
+  font-size: 10.5pt;
+  line-height: 1.5;
+}
+
+.surat-watermark {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22rem;
+  color: #0f766e;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.surat-kop {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.9rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #9ca3af;
+}
+
+.surat-kop .brand-logo {
+  box-shadow: none;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.surat-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f766e;
+  line-height: 1.1;
+}
+
+.surat-tagline {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.surat-nomor {
+  margin-left: auto;
+  text-align: right;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.surat-judul {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.4rem 0 0.75rem;
+  color: #374151;
+}
+
+.surat-grid {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1.5fr) 7rem minmax(0, 1fr);
+  gap: 0.5rem 1rem;
+  align-items: start;
+}
+
+.surat-grid-1 {
+  grid-template-columns: 9rem minmax(0, 1fr);
+}
+
+.surat-label {
+  padding: 0.35rem 0;
+  color: #4b5563;
+}
+
+.surat-isi {
+  padding: 0.35rem 0.75rem;
+  background: #f3f4f6;
+  border-radius: 0.25rem;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.surat-teks {
+  text-align: justify;
+}
+
+.surat-ttd {
+  margin: 1.5rem 0 1.25rem auto;
+  width: fit-content;
+  text-align: right;
+}
+
+.surat-kaki {
+  padding-top: 0.75rem;
+  border-top: 1px solid #9ca3af;
+  font-size: 0.75rem;
+  color: #4b5563;
+}
+
+@page {
+  margin: 1.2cm 1.5cm;
+}
+
 @media print {
   .no-print,
   .app-navbar,
@@ -1812,8 +1917,10 @@ code {
     background: #fff !important;
   }
 
-  .panel-content {
-    padding: 0;
+  .panel-content,
+  main.container {
+    padding: 0 !important;
+    max-width: none;
   }
 
   .card,

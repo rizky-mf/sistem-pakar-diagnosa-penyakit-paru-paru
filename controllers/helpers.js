@@ -1,9 +1,64 @@
-const { Riwayat } = require('../models');
+const { Penyakit, Gejala, Rule, Riwayat, RiwayatPenyakit, detailRiwayat } = require('../models');
+const { forwardChaining } = require('../services/forwardChaining');
+const { rankingPenyakit } = require('../services/certaintyFactor');
 
 function pesanError(err) {
   if (err.name === 'SequelizeUniqueConstraintError') return 'Kode sudah digunakan, gunakan kode lain.';
+  if (err.name === 'SequelizeForeignKeyConstraintError') {
+    return 'Data tidak dapat dihapus karena sudah dipakai pada riwayat diagnosa pasien.';
+  }
   console.error(err);
   return 'Terjadi kesalahan saat menyimpan data.';
+}
+
+// Mengubah aturan dari database menjadi format yang dipahami mesin inferensi
+async function muatRules() {
+  const ruleList = await Rule.findAll({
+    include: [Penyakit, Gejala],
+    order: [['kode', 'ASC']],
+  });
+  return ruleList.map((r) => ({
+    kode: r.kode,
+    premis: r.gejalas.map((g) => g.kode).sort(),
+    konklusi: r.penyakit.kode,
+    cfPakar: Object.fromEntries(r.gejalas.map((g) => [g.kode, g.rule_gejala.cf])),
+  }));
+}
+
+/**
+ * Menyusun data halaman hasil dari riwayat (dimuat dengan detailRiwayat).
+ * Jejak forward chaining dan langkah perhitungan CF dihitung ulang dari
+ * gejala & CF user yang tersimpan, memakai basis aturan saat ini.
+ */
+async function dataHasil(riwayat) {
+  const rules = await muatRules();
+  const cfUser = Object.fromEntries(riwayat.daftarGejala.map((g) => [g.kode, g.cfUser]));
+  const fc = forwardChaining(Object.keys(cfUser), rules);
+  const rincian = Object.fromEntries(rankingPenyakit(rules, cfUser, fc.jejak).map((r) => [r.konklusi, r]));
+
+  const lengkapi = (p) => {
+    const r = rincian[p.kode] || {};
+    return {
+      kode: p.kode,
+      nama: p.nama,
+      deskripsi: p.deskripsi,
+      solusi: p.solusi,
+      cf: p.cf,
+      persen: p.persen,
+      interpretasi: p.interpretasi,
+      rule: r.rule,
+      cocok: r.cocok,
+      total: r.total,
+      langkah: r.langkah || [],
+    };
+  };
+
+  return {
+    diagnosa: riwayat.diagnosa.map(lengkapi),
+    lainnya: riwayat.lainnya.map(lengkapi),
+    jejak: fc.jejak,
+    jumlahIterasi: fc.jumlahIterasi,
+  };
 }
 
 // Validasi data diri pasien, dipakai saat registrasi dan edit profil
@@ -17,23 +72,35 @@ function validasiDataPasien({ nama, username, jenisKelamin, tanggalLahir }) {
   return errors;
 }
 
-// Jumlah hasil diagnosa per penyakit, untuk grafik di dashboard
+// Jumlah hasil diagnosa (penyakit utama) per penyakit, untuk grafik di dashboard
 async function distribusiDiagnosa() {
-  const semua = await Riwayat.findAll({ attributes: ['hasil'] });
-  const hitung = {};
-  let tanpaKesimpulan = 0;
+  const [hasil, total] = await Promise.all([
+    RiwayatPenyakit.findAll({
+      include: [{ model: Penyakit, attributes: ['nama'] }],
+      order: [['cf', 'DESC'], ['id', 'ASC']],
+    }),
+    Riwayat.count(),
+  ]);
 
-  for (const r of semua) {
-    const diagnosa = r.hasil.diagnosa;
-    if (!diagnosa.length) tanpaKesimpulan++;
-    for (const d of diagnosa) hitung[d.nama] = (hitung[d.nama] || 0) + 1;
+  // Hasil diagnosa setiap riwayat = penyakit dengan CF tertinggi (baris pertama per riwayat)
+  const hitung = {};
+  const sudah = new Set();
+  for (const h of hasil) {
+    if (sudah.has(h.riwayatId)) continue;
+    sudah.add(h.riwayatId);
+    hitung[h.nama] = (hitung[h.nama] || 0) + 1;
   }
 
   const data = Object.entries(hitung)
     .map(([nama, jumlah]) => ({ nama, jumlah }))
     .sort((a, b) => b.jumlah - a.jumlah);
 
-  return { data, tanpaKesimpulan, total: semua.length };
+  return { data, tanpaKesimpulan: total - sudah.size, total };
 }
 
-module.exports = { pesanError, validasiDataPasien, distribusiDiagnosa };
+// Riwayat diagnosa terbaru beserta detailnya, untuk dashboard
+function terbaruRiwayat(limit) {
+  return Riwayat.findAll({ ...detailRiwayat, limit });
+}
+
+module.exports = { pesanError, muatRules, dataHasil, validasiDataPasien, distribusiDiagnosa, terbaruRiwayat };

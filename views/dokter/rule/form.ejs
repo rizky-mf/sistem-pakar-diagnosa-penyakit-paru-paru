@@ -8,6 +8,8 @@
   </div>
 </div>
 
+<%- include('../../partials/info-usulan') %>
+
 <form action="<%= action %>" method="POST">
   <div class="row g-4">
     <div class="col-lg-4 order-lg-last">
@@ -31,7 +33,7 @@
             <span class="fw-800 fs-5 text-primary" data-count-checked='#daftarGejala input[name="gejala"]'>0</span>
           </div>
           <div class="d-grid gap-2">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> Simpan Aturan</button>
+            <button class="btn btn-primary" type="submit"><i class="bi <%= isKetua ? 'bi-check-lg' : 'bi-send' %>"></i> <%= isKetua ? 'Simpan Aturan' : 'Kirim Usulan' %></button>
             <a href="/dokter/rule" class="btn btn-ghost">Batal</a>
           </div>
         </div>

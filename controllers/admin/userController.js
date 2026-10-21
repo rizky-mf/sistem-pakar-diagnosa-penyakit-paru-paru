@@ -1,8 +1,19 @@
 const bcrypt = require('bcryptjs');
-const { User } = require('../../models');
+const { sequelize, User } = require('../../models');
 const { pesanError } = require('../helpers');
 
 const ROLE_STAF = ['admin', 'dokter'];
+
+// Hanya satu dokter ketua: menjadikan seorang dokter ketua melepas status ketua dokter lain
+async function simpanAkun(user, data, jadikanKetua) {
+  await sequelize.transaction(async (transaction) => {
+    const ketua = data.role === 'dokter' && jadikanKetua;
+    if (ketua) await User.update({ ketua: false }, { where: { ketua: true }, transaction });
+    const isi = { ...data, ketua };
+    if (user) await user.update(isi, { transaction });
+    else await User.create(isi, { transaction });
+  });
+}
 
 exports.index = async (req, res, next) => {
   try {
@@ -28,7 +39,7 @@ exports.store = async (req, res) => {
     return res.redirect('/admin/user/tambah');
   }
   try {
-    await User.create({ nama, username, role, password: await bcrypt.hash(password, 10) });
+    await simpanAkun(null, { nama, username, role, password: await bcrypt.hash(password, 10) }, req.body.ketua === '1');
     req.flash('success', 'Akun berhasil ditambahkan.');
     res.redirect('/admin/user');
   } catch (err) {
@@ -61,7 +72,7 @@ exports.update = async (req, res) => {
       return res.redirect(kembali);
     }
 
-    const data = { nama, username };
+    const data = { nama, username, role: user.role };
     // Role pasien tidak bisa diubah, dan admin tidak bisa menurunkan role dirinya sendiri
     if (user.role !== 'pasien' && user.id !== req.session.user.id && ROLE_STAF.includes(req.body.role)) {
       data.role = req.body.role;
@@ -74,7 +85,8 @@ exports.update = async (req, res) => {
       data.password = await bcrypt.hash(password, 10);
     }
 
-    await user.update(data);
+    if (user.role === 'pasien') await user.update(data);
+    else await simpanAkun(user, data, req.body.ketua === '1');
     req.flash('success', 'Akun berhasil diperbarui.');
     res.redirect('/admin/user');
   } catch (err) {

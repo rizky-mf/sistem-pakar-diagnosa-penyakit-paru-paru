@@ -1,28 +1,39 @@
 <%
   const role = user ? user.role : null;
-  const isPanel = (role === 'admin' || role === 'dokter') &&
-    (currentPath.startsWith('/admin') || currentPath.startsWith('/dokter'));
   const isBare = typeof layout !== 'undefined' && layout === 'bare';
+  // Semua pengguna yang sudah login (admin, dokter, pasien) memakai tampilan panel dengan sidebar
+  const isPanel = Boolean(user) && !isBare;
   const inisial = user ? user.nama.trim().charAt(0).toUpperCase() : '';
   const aktif = (href, persis) => persis ? (currentPath === href || currentPath === href + '/') : currentPath.startsWith(href);
 
-  // Menu sidebar panel: [href, ikon, label] atau ['#label', judul grup]
-  const menu = role === 'admin'
-    ? [
+  // Menu sidebar panel: [href, ikon, label, badge?] atau ['#label', judul grup]
+  const ketua = typeof isKetua !== 'undefined' && isKetua;
+  const badgeUsulan = typeof jumlahUsulan !== 'undefined' ? jumlahUsulan : 0;
+  const menuRole = {
+    pasien: [
+      ['/diagnosa', 'bi-clipboard2-pulse', 'Diagnosa'],
+      ['/riwayat-saya', 'bi-clock-history', 'Riwayat Saya'],
+      ['#label', 'Informasi'],
+      ['/penyakit', 'bi-virus', 'Info Penyakit'],
+    ],
+    admin: [
         ['/admin', 'bi-grid-1x2', 'Dashboard'],
         ['#label', 'Manajemen'],
         ['/admin/user', 'bi-people', 'Kelola Akun'],
         ['/admin/riwayat', 'bi-clock-history', 'Riwayat Diagnosa'],
-      ]
-    : [
+    ],
+    dokter: [
         ['/dokter', 'bi-grid-1x2', 'Dashboard'],
         ['#label', 'Basis Pengetahuan'],
         ['/dokter/penyakit', 'bi-virus', 'Penyakit'],
         ['/dokter/gejala', 'bi-list-check', 'Gejala'],
         ['/dokter/rule', 'bi-diagram-3', 'Aturan (Rule)'],
+        ['/dokter/usulan', 'bi-patch-check', ketua ? 'Validasi Usulan' : 'Usulan Saya', badgeUsulan],
         ['#label', 'Pasien'],
         ['/dokter/riwayat', 'bi-clock-history', 'Riwayat Diagnosa'],
-      ];
+    ],
+  };
+  const menu = menuRole[role] || [];
 %>
 <!doctype html>
 <html lang="id" data-bs-theme="light">
@@ -77,13 +88,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Tutup"></button>
       </div>
       <div class="offcanvas-body">
-        <a class="brand d-none d-lg-inline-flex px-2 pt-1" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Panel <span class="text-capitalize"><%= role %></span></small></span></a>
+        <a class="brand d-none d-lg-inline-flex px-2 pt-1" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Panel <span class="text-capitalize"><%= role %></span><%= ketua ? ' (Ketua)' : '' %></small></span></a>
         <nav class="d-flex flex-column gap-1 mt-3">
-          <% menu.forEach(([href, a, b], i) => { %>
+          <% menu.forEach(([href, a, b, badge], i) => { %>
             <% if (href === '#label') { %>
               <div class="side-label"><%= a %></div>
             <% } else { %>
-              <a class="side-link <%= aktif(href, i === 0) ? 'active' : '' %>" href="<%= href %>"><i class="bi <%= a %>"></i><%= b %></a>
+              <a class="side-link <%= aktif(href, i === 0) ? 'active' : '' %>" href="<%= href %>"><i class="bi <%= a %>"></i><%= b %><% if (badge) { %><span class="badge rounded-pill text-bg-danger ms-auto"><%= badge %></span><% } %></a>
             <% } %>
           <% }) %>
         </nav>
@@ -111,6 +122,8 @@
             <i class="bi bi-chevron-down small text-muted"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="/profil"><i class="bi bi-person-gear"></i>Edit Profil</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li>
               <form action="/logout" method="POST">
                 <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right"></i>Keluar</button>
@@ -167,9 +180,7 @@
       <ul class="navbar-nav mx-lg-auto gap-lg-1">
         <% if (role === 'pasien') { %>
           <li class="nav-item"><a class="nav-link <%= currentPath.startsWith('/diagnosa') ? 'active' : '' %>" href="/diagnosa">Diagnosa</a></li>
-          <li class="nav-item"><a class="nav-link <%= currentPath === '/riwayat-saya' ? 'active' : '' %>" href="/riwayat-saya">Riwayat Saya</a></li>
-          <li class="nav-item"><a class="nav-link <%= currentPath === '/profil' ? 'active' : '' %>" href="/profil">Profil</a></li>
-        <% } %>
+          <li class="nav-item"><a class="nav-link <%= currentPath === '/riwayat-saya' ? 'active' : '' %>" href="/riwayat-saya">Riwayat Saya</a></li>        <% } %>
         <li class="nav-item"><a class="nav-link <%= currentPath === '/penyakit' ? 'active' : '' %>" href="/penyakit">Info Penyakit</a></li>
         <% if (role === 'admin' || role === 'dokter') { %>
           <li class="nav-item"><a class="nav-link" href="/<%= role %>">Panel <span class="text-capitalize"><%= role %></span></a></li>

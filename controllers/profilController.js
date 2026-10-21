@@ -2,19 +2,28 @@ const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 const { User } = require('../models');
 const { validasiDataPasien } = require('./helpers');
+const { berandaRole } = require('../middleware/auth');
 
-function render(res, old, errors = [], status = 200) {
-  res.status(status).render('pasien/profil', { title: 'Profil Saya', old, errors });
+// Pasien mengisi data diri lengkap; dokter dan admin cukup nama dan username
+function render(req, res, old, errors = [], status = 200) {
+  const role = req.session.user.role;
+  res.status(status).render('profil', {
+    title: 'Profil Saya',
+    old,
+    errors,
+    dataPasien: role === 'pasien',
+    kembali: berandaRole(role),
+  });
 }
 
 exports.form = async (req, res, next) => {
   try {
-    const pasien = await User.findByPk(req.session.user.id);
-    render(res, {
-      nama: pasien.nama,
-      username: pasien.username,
-      jenisKelamin: pasien.jenisKelamin,
-      tanggalLahir: pasien.tanggalLahir,
+    const akun = await User.findByPk(req.session.user.id);
+    render(req, res, {
+      nama: akun.nama,
+      username: akun.username,
+      jenisKelamin: akun.jenisKelamin,
+      tanggalLahir: akun.tanggalLahir,
     });
   } catch (err) {
     next(err);
@@ -24,26 +33,34 @@ exports.form = async (req, res, next) => {
 // Data diri wajib; kata sandi hanya diganti bila kolom kata sandi baru diisi
 exports.update = async (req, res, next) => {
   try {
-    const pasien = await User.findByPk(req.session.user.id);
+    const akun = await User.findByPk(req.session.user.id);
+    const pasien = akun.role === 'pasien';
     const nama = (req.body.nama || '').trim();
     const username = (req.body.username || '').trim();
     const { jenisKelamin, tanggalLahir, passwordLama, passwordBaru, konfirmasi } = req.body;
     const old = { nama, username, jenisKelamin, tanggalLahir };
 
-    const errors = validasiDataPasien(old);
+    let errors;
+    if (pasien) {
+      errors = validasiDataPasien(old);
+    } else {
+      errors = [];
+      if (!nama) errors.push('Nama wajib diisi.');
+      if (!/^[a-zA-Z0-9_.]{4,50}$/.test(username)) errors.push('Username 4-50 karakter (huruf, angka, titik, garis bawah).');
+    }
     if (passwordBaru) {
-      if (!(await bcrypt.compare(passwordLama || '', pasien.password))) errors.push('Kata sandi lama salah.');
+      if (!(await bcrypt.compare(passwordLama || '', akun.password))) errors.push('Kata sandi lama salah.');
       if (passwordBaru.length < 6) errors.push('Kata sandi baru minimal 6 karakter.');
       if (passwordBaru !== konfirmasi) errors.push('Konfirmasi kata sandi baru tidak sama.');
     }
-    if (!errors.length && (await User.findOne({ where: { username, id: { [Op.ne]: pasien.id } } }))) {
+    if (!errors.length && (await User.findOne({ where: { username, id: { [Op.ne]: akun.id } } }))) {
       errors.push('Username sudah digunakan.');
     }
-    if (errors.length) return render(res, old, errors, 422);
+    if (errors.length) return render(req, res, old, errors, 422);
 
-    const perubahan = { nama, username, jenisKelamin, tanggalLahir };
+    const perubahan = pasien ? { nama, username, jenisKelamin, tanggalLahir } : { nama, username };
     if (passwordBaru) perubahan.password = await bcrypt.hash(passwordBaru, 10);
-    await pasien.update(perubahan);
+    await akun.update(perubahan);
 
     Object.assign(req.session.user, { nama, username });
     req.flash('success', 'Profil berhasil diperbarui.');

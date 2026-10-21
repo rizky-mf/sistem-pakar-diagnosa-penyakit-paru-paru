@@ -1,20 +1,7 @@
-const { Penyakit, Gejala, Rule, Riwayat, User, hitungUmur } = require('../models');
+const { sequelize, Penyakit, Gejala, Riwayat, User, detailRiwayat, hitungUmur } = require('../models');
+const { muatRules, dataHasil } = require('./helpers');
 const { forwardChaining } = require('../services/forwardChaining');
-const { TINGKAT_KEYAKINAN, rankingPenyakit, interpretasi } = require('../services/certaintyFactor');
-
-// Mengubah aturan dari database menjadi format yang dipahami mesin inferensi
-async function muatRules() {
-  const ruleList = await Rule.findAll({
-    include: [Penyakit, Gejala],
-    order: [['kode', 'ASC']],
-  });
-  return ruleList.map((r) => ({
-    kode: r.kode,
-    premis: r.gejalas.map((g) => g.kode).sort(),
-    konklusi: r.penyakit.kode,
-    cfPakar: Object.fromEntries(r.gejalas.map((g) => [g.kode, g.rule_gejala.cf])),
-  }));
-}
+const { TINGKAT_KEYAKINAN, rankingPenyakit } = require('../services/certaintyFactor');
 
 // Keyakinan pasien dikirim sebagai cf_<kode gejala>; hanya nilai > 0 yang dianggap dirasakan
 function keyakinanUser(body, semuaGejala) {
@@ -70,48 +57,29 @@ exports.proses = async (req, res, next) => {
 
     const gejalaDipilih = semuaGejala
       .filter((g) => g.kode in cfUser)
-      .map((g) => ({ kode: g.kode, nama: g.nama, cfUser: cfUser[g.kode] }));
+      .map((g) => ({ gejalaId: g.id, cfUser: cfUser[g.kode] }));
     const penyakitByKode = Object.fromEntries(semuaPenyakit.map((p) => [p.kode, p]));
 
     // === 1. Forward chaining: telusuri aturan yang seluruh premisnya terpenuhi ===
     const fc = forwardChaining(Object.keys(cfUser), rules);
 
     // === 2. Certainty factor: hitung CF tiap penyakit dari gejala yang cocok, urutkan ===
-    const ranking = rankingPenyakit(rules, cfUser, fc.jejak)
+    // Disimpan berurutan dari CF tertinggi; urutan pertama menjadi hasil diagnosa
+    const hasilPenyakit = rankingPenyakit(rules, cfUser, fc.jejak)
       .filter((r) => penyakitByKode[r.konklusi])
-      .map((r) => {
-        const p = penyakitByKode[r.konklusi];
-        return {
-          kode: p.kode,
-          nama: p.nama,
-          deskripsi: p.deskripsi,
-          solusi: p.solusi,
-          cf: r.cf,
-          persen: Math.round(r.cf * 10000) / 100,
-          interpretasi: interpretasi(r.cf),
-          rule: r.rule,
-          langkah: r.langkah,
-          cocok: r.cocok,
-          total: r.total,
-          lengkap: r.lengkap,
-        };
-      });
+      .map((r) => ({ penyakitId: penyakitByKode[r.konklusi].id, cf: r.cf }));
 
-    // Penyakit dengan CF tertinggi menjadi hasil diagnosa, sisanya kemungkinan lain
-    const [utama, ...lainnya] = ranking;
-
-    const riwayat = await Riwayat.create({
-      userId: req.session.user.id,
-      ...pasien,
-      gejala: gejalaDipilih,
-      hasil: {
-        diagnosa: utama ? [utama] : [],
-        lainnya,
-        jejak: fc.jejak,
-        jumlahIterasi: fc.jumlahIterasi,
-      },
-      tanggalDiagnosa: new Date(),
-    });
+    const riwayat = await sequelize.transaction((transaction) =>
+      Riwayat.create(
+        {
+          userId: req.session.user.id,
+          tanggalDiagnosa: new Date(),
+          daftarGejala: gejalaDipilih,
+          daftarPenyakit: hasilPenyakit,
+        },
+        { include: [{ association: 'daftarGejala' }, { association: 'daftarPenyakit' }], transaction }
+      )
+    );
 
     res.redirect(`/diagnosa/hasil/${riwayat.id}`);
   } catch (err) {
@@ -123,13 +91,19 @@ exports.proses = async (req, res, next) => {
 exports.hasil = async (req, res, next) => {
   try {
     const { id: userId, role } = req.session.user;
-    const riwayat = await Riwayat.findByPk(req.params.id);
+    const riwayat = await Riwayat.findByPk(req.params.id, detailRiwayat);
     const boleh = riwayat && (role !== 'pasien' || riwayat.userId === userId);
     if (!boleh) {
       return res.status(404).render('error', { title: 'Tidak Ditemukan', message: 'Hasil diagnosa tidak ditemukan.' });
     }
     const kembali = role === 'pasien' ? '/riwayat-saya' : `/${role}/riwayat`;
-    res.render('diagnosa/hasil', { title: 'Hasil Diagnosa', riwayat, kembali, tingkatKeyakinan: TINGKAT_KEYAKINAN });
+    res.render('diagnosa/hasil', {
+      title: 'Hasil Diagnosa',
+      riwayat,
+      ...(await dataHasil(riwayat)),
+      kembali,
+      tingkatKeyakinan: TINGKAT_KEYAKINAN,
+    });
   } catch (err) {
     next(err);
   }
@@ -137,10 +111,7 @@ exports.hasil = async (req, res, next) => {
 
 exports.riwayatSaya = async (req, res, next) => {
   try {
-    const riwayat = await Riwayat.findAll({
-      where: { userId: req.session.user.id },
-      order: [['tanggalDiagnosa', 'DESC']],
-    });
+    const riwayat = await Riwayat.findAll({ ...detailRiwayat, where: { userId: req.session.user.id } });
     res.render('pasien/riwayat', { title: 'Riwayat Saya', riwayat });
   } catch (err) {
     next(err);

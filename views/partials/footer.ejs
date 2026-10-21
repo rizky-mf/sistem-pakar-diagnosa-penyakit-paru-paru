@@ -1,8 +1,6 @@
 <%
-  const roleF = user ? user.role : null;
-  const isPanelF = (roleF === 'admin' || roleF === 'dokter') &&
-    (currentPath.startsWith('/admin') || currentPath.startsWith('/dokter'));
   const isBareF = typeof layout !== 'undefined' && layout === 'bare';
+  const isPanelF = Boolean(user) && !isBareF;
 %>
 <% if (isPanelF) { %>
     </main>

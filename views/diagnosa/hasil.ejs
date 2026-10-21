@@ -1,23 +1,88 @@
 <%- include('../partials/header') %>
 <%
-  const hasil = riwayat.hasil;
-  const namaGejala = Object.fromEntries(riwayat.gejala.map(g => [g.kode, g.nama]));
-  const lainnya = hasil.lainnya || [];
-  const parsial = hasil.parsial || []; // format riwayat lama (sebelum certainty factor)
-  const namaPenyakit = Object.fromEntries([...hasil.diagnosa, ...lainnya].map(d => [d.kode, d.nama]));
-  const tanggal = new Date(riwayat.tanggalDiagnosa || riwayat.createdAt);
+  // diagnosa, lainnya, jejak, jumlahIterasi disiapkan oleh controller (helpers.dataHasil)
+  const namaGejala = Object.fromEntries(riwayat.daftarGejala.map(g => [g.kode, g.nama]));
+  const namaPenyakit = Object.fromEntries([...diagnosa, ...lainnya].map(d => [d.kode, d.nama]));
+  const tanggal = new Date(riwayat.tanggalDiagnosa);
   const waktuDiagnosa = tanggal.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ', ' +
     tanggal.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
   const labelKeyakinan = Object.fromEntries(tingkatKeyakinan.map(t => [t.nilai, t.label]));
   const angka = n => Number(n).toLocaleString('id-ID', { maximumFractionDigits: 4 });
   const persen = n => Number(n).toLocaleString('id-ID', { maximumFractionDigits: 2 });
-  const perhitungan = [...hasil.diagnosa, ...lainnya].filter(d => d.cf != null);
+  const perhitungan = [...diagnosa, ...lainnya].filter(d => d.langkah.length);
 %>
 
 <% if (user && user.role === 'pasien') { %>
   <%- include('../partials/stepper', { langkah: 4 }) %>
 <% } %>
 
+<%
+  const lahir = riwayat.user ? new Date(riwayat.user.tanggalLahir) : null;
+  const tglPanjang = t => t.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  const utama = diagnosa[0];
+%>
+<%# Lembar cetak: hanya tampil saat halaman dicetak %>
+<div class="surat-cetak d-none d-print-block">
+  <i class="bi bi-lungs surat-watermark" aria-hidden="true"></i>
+
+  <header class="surat-kop">
+    <span class="brand-logo"><i class="bi bi-lungs"></i></span>
+    <div>
+      <div class="surat-brand">SiPakar Paru</div>
+      <div class="surat-tagline">Sistem Pakar Diagnosa Penyakit Paru-Paru</div>
+    </div>
+    <div class="surat-nomor">No. Hasil<br><strong>#<%= String(riwayat.id).padStart(5, '0') %></strong></div>
+  </header>
+
+  <h2 class="surat-judul">Informasi Pasien</h2>
+  <div class="surat-grid">
+    <span class="surat-label">Nama Pasien</span><span class="surat-isi"><%= riwayat.nama %></span>
+    <span class="surat-label">Jenis Kelamin</span><span class="surat-isi"><%= riwayat.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></span>
+    <span class="surat-label">Tanggal Lahir</span><span class="surat-isi"><%= lahir ? tglPanjang(lahir) : '-' %></span>
+    <span class="surat-label">Umur</span><span class="surat-isi"><%= riwayat.umur %> tahun</span>
+  </div>
+
+  <h2 class="surat-judul">Catatan</h2>
+  <p>Tanggal diagnosa keluar: <strong><%= waktuDiagnosa %></strong></p>
+  <p>Untuk perhatian,</p>
+  <% if (utama) { %>
+    <p class="surat-teks">
+      Kami informasikan bahwa pasien di atas kemungkinan didiagnosa: <strong><%= utama.nama %></strong>
+      dengan tingkat kepastian <strong><%= persen(utama.persen) %>% (<%= utama.interpretasi %>)</strong>.
+      Diagnosa tersebut diberikan atas <%= riwayat.daftarGejala.length %> gejala yang dipilih pasien pada saat pemeriksaan.
+    </p>
+  <% } else { %>
+    <p class="surat-teks">
+      Berdasarkan <%= riwayat.daftarGejala.length %> gejala yang dipilih pasien pada saat pemeriksaan, sistem belum dapat
+      menyimpulkan penyakit paru-paru tertentu. Jika keluhan berlanjut, pasien disarankan berkonsultasi langsung ke dokter.
+    </p>
+  <% } %>
+
+  <% if (utama) { %>
+    <h2 class="surat-judul">Hasil Diagnosa dan Saran Penanganan</h2>
+    <div class="surat-grid surat-grid-1">
+      <span class="surat-label">Penyakit</span><span class="surat-isi"><%= utama.nama %> (<%= utama.kode %>)</span>
+      <span class="surat-label">Tingkat Kepastian</span><span class="surat-isi"><%= persen(utama.persen) %>% &middot; <%= utama.interpretasi %></span>
+      <span class="surat-label">Keterangan</span><span class="surat-isi"><%= utama.deskripsi %></span>
+      <span class="surat-label">Saran Penanganan</span><span class="surat-isi"><%= utama.solusi %></span>
+    </div>
+  <% } %>
+
+  <p class="surat-teks mt-4">Demikian informasi dari kami, semoga dapat menjadi bahan pertimbangan.</p>
+
+  <div class="surat-ttd">
+    <div class="fw-bold">Diagnosa Oleh</div>
+    <div class="fw-bold mt-3">Sistem Pakar SiPakar Paru</div>
+    <div>Metode Forward Chaining &amp; Certainty Factor</div>
+  </div>
+
+  <footer class="surat-kaki">
+    Dokumen ini merupakan hasil diagnosa awal dari sistem pakar dan bukan pengganti pemeriksaan dokter.
+    Bawa dokumen ini saat berkonsultasi dengan dokter.
+  </footer>
+</div>
+
+<div class="d-print-none">
 <div class="page-header">
   <div>
     <h1 class="page-title">Hasil Diagnosa</h1>
@@ -32,21 +97,19 @@
 <div class="row g-4">
   <div class="col-lg-8">
 
-    <% if (hasil.diagnosa.length) { %>
-      <% hasil.diagnosa.forEach((d, i) => { %>
+    <% if (diagnosa.length) { %>
+      <% diagnosa.forEach((d, i) => { %>
         <div class="result-hero mb-3">
           <div class="d-flex align-items-center gap-2">
-            <span class="label"><%= d.cf != null ? 'Terindikasi' : hasil.diagnosa.length > 1 ? 'Kesimpulan ' + (i + 1) : 'Kesimpulan diagnosa' %></span>
+            <span class="label">Terindikasi</span>
             <span class="badge badge-glass"><%= d.kode %></span>
           </div>
           <h2><%= d.nama %></h2>
-          <% if (d.cf != null) { %>
-            <div class="my-3">
-              <div class="small opacity-75">Tingkat kepastian diagnosa</div>
-              <div class="fs-1 fw-800 lh-1 my-1"><%= persen(d.persen) %>%</div>
-              <div class="small fw-semibold"><%= d.interpretasi %><% if (d.total) { %> &middot; <%= d.cocok %>/<%= d.total %> gejala aturan <%= d.rule %> cocok<% } %></div>
-            </div>
-          <% } %>
+          <div class="my-3">
+            <div class="small opacity-75">Tingkat kepastian diagnosa</div>
+            <div class="fs-1 fw-800 lh-1 my-1"><%= persen(d.persen) %>%</div>
+            <div class="small fw-semibold"><%= d.interpretasi %><% if (d.total) { %> &middot; <%= d.cocok %>/<%= d.total %> gejala aturan <%= d.rule %> cocok<% } %></div>
+          </div>
           <p><%= d.deskripsi %></p>
         </div>
         <div class="card mb-4">
@@ -87,28 +150,6 @@
             </div>
           <% }) %>
           <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i>Persentase adalah tingkat kepastian (certainty factor) dari gejala yang cocok dengan aturan penyakit tersebut.</p>
-        </div>
-      </div>
-    <% } %>
-
-    <% if (parsial.length) { %>
-      <div class="card mb-4">
-        <div class="card-header d-flex align-items-center gap-2">
-          <i class="bi bi-activity text-warning"></i> Kemungkinan lain yang perlu diwaspadai
-        </div>
-        <div class="card-body d-flex flex-column gap-3">
-          <% parsial.forEach(p => { %>
-            <div>
-              <div class="d-flex justify-content-between gap-2 small mb-1">
-                <span class="fw-semibold"><%= p.nama %> <span class="text-muted fw-normal">&middot; <%= p.rule %></span></span>
-                <span class="text-muted text-nowrap"><%= p.cocok %>/<%= p.total %> gejala &middot; <strong style="color: var(--ink)"><%= p.persen %>%</strong><% if (p.persenCF != null) { %> &middot; CF <%= Number(p.persenCF).toLocaleString('id-ID') %>%<% } %></span>
-              </div>
-              <div class="progress" style="height: 8px" role="progressbar" aria-label="Kecocokan <%= p.nama %>" aria-valuenow="<%= p.persen %>" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar" <%- `style="width: ${Number(p.persen)}%"` %>></div>
-              </div>
-            </div>
-          <% }) %>
-          <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i>Persentase ini hanya rasio gejala yang cocok (dan CF dari gejala yang cocok), bukan kesimpulan forward chaining.</p>
         </div>
       </div>
     <% } %>
@@ -159,9 +200,9 @@
         <i class="bi bi-diagram-3 text-primary"></i> Jejak penalaran forward chaining
       </div>
       <div class="card-body">
-        <% if (hasil.jejak.length) { %>
+        <% if (jejak.length) { %>
           <ol class="timeline">
-            <% hasil.jejak.forEach(j => { %>
+            <% jejak.forEach(j => { %>
               <li>
                 <div class="tl-meta">Iterasi <%= j.iterasi %> &middot; Aturan <%= j.rule %> terpenuhi</div>
                 <div class="rule-expr">
@@ -178,9 +219,9 @@
             <% }) %>
           </ol>
         <% } else { %>
-          <p class="text-muted mb-0">Belum ada aturan yang seluruh premisnya terpenuhi oleh fakta awal<%= hasil.diagnosa.length ? '; hasil di atas dihitung dari gejala yang cocok sebagian' : '' %>.</p>
+          <p class="text-muted mb-0">Belum ada aturan yang seluruh premisnya terpenuhi oleh fakta awal<%= diagnosa.length ? '; hasil di atas dihitung dari gejala yang cocok sebagian' : '' %>.</p>
         <% } %>
-        <p class="text-muted small mt-3 mb-0">Inferensi berhenti setelah <%= hasil.jumlahIterasi %> iterasi karena tidak ada fakta baru yang dihasilkan.</p>
+        <p class="text-muted small mt-3 mb-0">Inferensi berhenti setelah <%= jumlahIterasi %> iterasi karena tidak ada fakta baru yang dihasilkan.</p>
       </div>
     </div>
   </div>
@@ -207,10 +248,10 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Gejala dipilih</span>
-        <span class="badge badge-code"><%= riwayat.gejala.length %></span>
+        <span class="badge badge-code"><%= riwayat.daftarGejala.length %></span>
       </div>
       <div class="card-body d-flex flex-wrap gap-2">
-        <% riwayat.gejala.forEach(g => { %>
+        <% riwayat.daftarGejala.forEach(g => { %>
           <span class="chip"><span class="badge badge-code"><%= g.kode %></span><%= g.nama %><% if (g.cfUser != null) { %> <small class="text-muted">(<%= labelKeyakinan[g.cfUser] || g.cfUser %>)</small><% } %></span>
         <% }) %>
       </div>
@@ -218,6 +259,7 @@
 
     <p class="disclaimer"><i class="bi bi-shield-check"></i>Hasil ini bukan pengganti diagnosis dokter. Bawa hasil cetak saat berkonsultasi.</p>
   </div>
+</div>
 </div>
 
 <%- include('../partials/footer') %>

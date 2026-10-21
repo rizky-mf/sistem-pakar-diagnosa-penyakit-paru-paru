@@ -32,14 +32,14 @@
                 </div>
               </div>
             </td>
-            <td><span class="badge badge-role <%= u.role %>"><%= u.role %></span></td>
+            <td><span class="badge badge-role <%= u.role %>"><%= u.role %></span><% if (u.ketua) { %> <span class="badge bg-warning-subtle text-warning-emphasis">ketua</span><% } %></td>
             <td class="d-none d-md-table-cell"><%= u.jenisKelamin === 'L' ? 'Laki-laki' : u.jenisKelamin === 'P' ? 'Perempuan' : '-' %></td>
             <td class="d-none d-lg-table-cell text-muted"><%= u.tanggalLahir ? new Date(u.tanggalLahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' %></td>
             <td class="text-end text-nowrap">
               <a href="/admin/user/<%= u.id %>/edit" class="btn btn-ghost btn-icon btn-sm" aria-label="Edit"><i class="bi bi-pencil"></i></a>
               <% if (u.id !== user.id) { %>
                 <form action="/admin/user/<%= u.id %>?_method=DELETE" method="POST" class="d-inline"
-                      data-confirm="Akun @<%= u.username %> akan dihapus. Riwayat diagnosanya tetap tersimpan.">
+                      data-confirm="Akun @<%= u.username %> akan dihapus beserta riwayat diagnosanya.">
                   <button class="btn btn-ghost btn-icon btn-sm danger" aria-label="Hapus"><i class="bi bi-trash3"></i></button>
                 </form>
               <% } %>

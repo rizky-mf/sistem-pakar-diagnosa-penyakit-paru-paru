@@ -19,8 +19,9 @@ router.post('/logout', auth.logout);
 router.get('/diagnosa', requireRole('pasien'), diagnosa.form);
 router.post('/diagnosa', requireRole('pasien'), diagnosa.proses);
 router.get('/riwayat-saya', requireRole('pasien'), diagnosa.riwayatSaya);
-router.get('/profil', requireRole('pasien'), profil.form);
-router.post('/profil', requireRole('pasien'), profil.update);
+// Edit profil untuk semua pengguna yang login (pasien, dokter, admin)
+router.get('/profil', requireLogin, profil.form);
+router.post('/profil', requireLogin, profil.update);
 
 // Pasien (miliknya sendiri), dokter, dan admin
 router.get('/diagnosa/hasil/:id', requireLogin, diagnosa.hasil);

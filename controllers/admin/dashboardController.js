@@ -1,5 +1,5 @@
 const { User, Riwayat } = require('../../models');
-const { distribusiDiagnosa } = require('../helpers');
+const { distribusiDiagnosa, terbaruRiwayat } = require('../helpers');
 
 exports.index = async (req, res, next) => {
   try {
@@ -8,7 +8,7 @@ exports.index = async (req, res, next) => {
       User.count({ where: { role: 'dokter' } }),
       User.count({ where: { role: 'pasien' } }),
       Riwayat.count(),
-      Riwayat.findAll({ order: [['tanggalDiagnosa', 'DESC']], limit: 5 }),
+      terbaruRiwayat(5),
       distribusiDiagnosa(),
     ]);
     res.render('dashboard', {

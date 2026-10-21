@@ -117,7 +117,9 @@ const rules = [
 // Akun awal untuk setiap aktor
 const users = [
   { nama: 'Administrator', username: 'admin', password: 'admin123', role: 'admin' },
-  { nama: 'dr. Pakar Paru, Sp.P', username: 'dokter', password: 'dokter123', role: 'dokter' },
+  // Dokter ketua memvalidasi usulan basis pengetahuan dari dokter lain
+  { nama: 'dr. Pakar Paru, Sp.P', username: 'dokter', password: 'dokter123', role: 'dokter', ketua: true },
+  { nama: 'dr. Anggota Tim Pakar', username: 'dokter2', password: 'dokter123', role: 'dokter' },
   {
     nama: 'Pasien Contoh',
     username: 'pasien',

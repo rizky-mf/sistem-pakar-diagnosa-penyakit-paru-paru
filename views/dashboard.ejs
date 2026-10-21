@@ -65,8 +65,8 @@
                     </div>
                   </td>
                   <td>
-                    <% if (r.hasil.diagnosa.length) { %>
-                      <% r.hasil.diagnosa.forEach(d => { %><span class="badge badge-soft me-1"><%= d.nama %><% if (d.persen != null) { %> &middot; <%= Number(d.persen).toLocaleString('id-ID') %>%<% } %></span><% }) %>
+                    <% if (r.diagnosa.length) { %>
+                      <% r.diagnosa.forEach(d => { %><span class="badge badge-soft me-1"><%= d.nama %><% if (d.persen != null) { %> &middot; <%= Number(d.persen).toLocaleString('id-ID') %>%<% } %></span><% }) %>
                     <% } else { %>
                       <span class="text-muted small">Tidak ada kesimpulan</span>
                     <% } %>

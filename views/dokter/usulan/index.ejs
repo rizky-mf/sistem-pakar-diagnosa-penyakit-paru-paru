@@ -1,0 +1,72 @@
+<%- include('../../partials/header') %>
+<%
+  const STATUS = {
+    menunggu: ['Menunggu', 'bg-warning-subtle text-warning-emphasis'],
+    disetujui: ['Disetujui', 'bg-success-subtle text-success-emphasis'],
+    ditolak: ['Ditolak', 'bg-danger-subtle text-danger-emphasis'],
+  };
+  const waktu = t => new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+%>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><%= title %></h1>
+    <p class="page-subtitle">
+      <% if (isKetua) { %>
+        Tinjau usulan penyakit, gejala, dan aturan dari dokter lain. Data baru dipakai untuk diagnosa setelah Anda setujui.
+      <% } else { %>
+        Tambahan dan perubahan basis pengetahuan Anda menunggu validasi dokter ketua sebelum dipakai untuk diagnosa.
+      <% } %>
+    </p>
+  </div>
+</div>
+
+<% const tabel = (daftar, kosong) => { %>
+  <div class="card card-table mb-4">
+    <% if (!daftar.length) { %>
+      <div class="empty-state py-4">
+        <p class="mb-0 small"><%= kosong %></p>
+      </div>
+    <% } else { %>
+      <div class="table-responsive">
+        <table class="table table-modern">
+          <thead>
+            <tr>
+              <th>Usulan</th>
+              <th class="d-none d-md-table-cell">Isi</th>
+              <% if (isKetua) { %><th class="d-none d-lg-table-cell">Pengusul</th><% } %>
+              <th>Status</th>
+              <th class="d-none d-lg-table-cell">Diperbarui</th>
+              <th class="text-end">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% daftar.forEach(({ jenis, label, u, aksi, ringkasan }) => { const [teks, kelas] = STATUS[u.status]; %>
+              <tr>
+                <td>
+                  <div class="cell-title"><%= aksi %> <%= label.toLowerCase() %> <span class="badge badge-code neutral ms-1"><%= u.kode %></span></div>
+                  <% if (u.status === 'ditolak' && u.catatan) { %><div class="cell-sub text-danger"><i class="bi bi-chat-left-text me-1"></i><%= u.catatan %></div><% } %>
+                </td>
+                <td class="d-none d-md-table-cell text-muted small" style="max-width: 22rem"><span class="clamp-3"><%= ringkasan %></span></td>
+                <% if (isKetua) { %><td class="d-none d-lg-table-cell small"><%= u.pengusul ? u.pengusul.nama : '-' %></td><% } %>
+                <td><span class="badge <%= kelas %>"><%= teks %></span></td>
+                <td class="d-none d-lg-table-cell text-muted small text-nowrap"><%= waktu(u.updatedAt) %></td>
+                <td class="text-end text-nowrap">
+                  <a href="/dokter/usulan/<%= jenis %>/<%= u.id %>" class="btn btn-ghost btn-sm"><%= isKetua && u.status === 'menunggu' ? 'Tinjau' : 'Detail' %></a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+<% } %>
+
+<h2 class="h6 fw-bold mb-2">Menunggu validasi <span class="text-muted fw-normal">(<%= menunggu.length %>)</span></h2>
+<% tabel(menunggu, isKetua ? 'Tidak ada usulan yang menunggu validasi.' : 'Tidak ada usulan Anda yang sedang menunggu.') %>
+
+<h2 class="h6 fw-bold mb-2"><%= isKetua ? 'Riwayat validasi' : 'Sudah divalidasi' %></h2>
+<% tabel(lainnya, 'Belum ada usulan yang divalidasi.') %>
+
+<%- include('../../partials/footer') %>

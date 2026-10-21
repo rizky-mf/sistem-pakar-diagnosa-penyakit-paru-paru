@@ -33,6 +33,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(require('./middleware/auth').statusDokter);
+
 app.use('/', require('./routes/index'));
 app.use('/admin', require('./routes/admin'));
 app.use('/dokter', require('./routes/dokter'));
