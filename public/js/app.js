@@ -93,6 +93,18 @@
     perbarui();
   });
 
+  // ---------- Tampilkan / sembunyikan kata sandi: <button data-toggle-password="#input"> ----------
+  document.querySelectorAll('[data-toggle-password]').forEach((btn) => {
+    const input = document.querySelector(btn.dataset.togglePassword);
+    if (!input) return;
+    btn.addEventListener('click', () => {
+      const tampil = input.type === 'password';
+      input.type = tampil ? 'text' : 'password';
+      btn.querySelector('i').className = tampil ? 'bi bi-eye-slash' : 'bi bi-eye';
+      btn.setAttribute('aria-label', tampil ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+    });
+  });
+
   // ---------- Modal detail penyakit ----------
   const modalDetail = document.getElementById('detailModal');
   if (modalDetail) {

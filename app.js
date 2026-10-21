@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
-const flash = require('connect-flash');
+const flash = require('./middleware/flash');
 const methodOverride = require('method-override');
 const { sequelize } = require('./models');
 
@@ -22,7 +22,7 @@ app.use(
     cookie: { maxAge: 1000 * 60 * 60 * 2 },
   })
 );
-app.use(flash());
+app.use(flash);
 
 // Variabel global untuk semua view
 app.use((req, res, next) => {

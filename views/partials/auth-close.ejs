@@ -1,0 +1,164 @@
+<%# Penutup layout halaman login/daftar: panel kanan (sambutan + ilustrasi + fitur) dan footer %>
+      <div class="mt-auto pt-4 text-center">
+        <button type="button" class="link-help" data-bs-toggle="modal" data-bs-target="#helpModal">
+          <i class="bi bi-question-circle"></i> Butuh Bantuan?
+        </button>
+      </div>
+    </section>
+
+    <section class="auth-showcase" aria-label="Tentang aplikasi">
+      <h1 class="showcase-title">Selamat Datang di <span>SiPakar Paru</span></h1>
+      <div class="accent-line"></div>
+      <p class="showcase-sub">Sistem Pakar Diagnosa Penyakit Paru-Paru Menggunakan Metode Forward Chaining</p>
+
+      <div class="showcase-illustration">
+        <svg viewBox="0 0 600 340" role="img" aria-label="Ilustrasi klinik paru-paru" class="w-100 h-auto">
+          <defs>
+            <linearGradient id="ilGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0d9488" />
+              <stop offset="1" stop-color="#0284c7" />
+            </linearGradient>
+          </defs>
+
+          <!-- Matahari -->
+          <g class="ill-pulse">
+            <circle cx="118" cy="62" r="26" fill="#fcd34d" />
+            <g stroke="#fbbf24" stroke-width="5" stroke-linecap="round">
+              <line x1="118" y1="22" x2="118" y2="10" /><line x1="118" y1="102" x2="118" y2="114" />
+              <line x1="78" y1="62" x2="66" y2="62" /><line x1="158" y1="62" x2="170" y2="62" />
+              <line x1="90" y1="34" x2="82" y2="26" /><line x1="146" y1="34" x2="154" y2="26" />
+              <line x1="90" y1="90" x2="82" y2="98" /><line x1="146" y1="90" x2="154" y2="98" />
+            </g>
+          </g>
+
+          <!-- Awan -->
+          <g class="ill-cloud ill-drift">
+            <circle cx="438" cy="52" r="16" /><circle cx="460" cy="42" r="21" /><circle cx="484" cy="52" r="15" />
+            <rect x="422" y="50" width="78" height="17" rx="8.5" />
+          </g>
+
+          <!-- Tanah & jalan -->
+          <ellipse cx="300" cy="302" rx="270" ry="30" fill="#5eead4" opacity="0.3" />
+          <ellipse cx="300" cy="298" rx="236" ry="20" fill="#34d399" opacity="0.45" />
+          <path d="M282 290 L318 290 L346 330 L254 330 Z" class="ill-wall-2" />
+
+          <!-- Gedung sayap kiri -->
+          <rect x="150" y="168" width="70" height="122" rx="6" class="ill-wall ill-stroke" />
+          <g fill="#bae6fd">
+            <rect x="162" y="184" width="18" height="16" rx="3" /><rect x="190" y="184" width="18" height="16" rx="3" />
+            <rect x="162" y="212" width="18" height="16" rx="3" /><rect x="190" y="212" width="18" height="16" rx="3" />
+            <rect x="162" y="240" width="18" height="16" rx="3" /><rect x="190" y="240" width="18" height="16" rx="3" />
+          </g>
+
+          <!-- Gedung sayap kanan -->
+          <rect x="380" y="150" width="80" height="140" rx="6" class="ill-wall ill-stroke" />
+          <g fill="#bae6fd">
+            <rect x="394" y="166" width="20" height="18" rx="3" /><rect x="426" y="166" width="20" height="18" rx="3" />
+            <rect x="394" y="196" width="20" height="18" rx="3" /><rect x="426" y="196" width="20" height="18" rx="3" />
+            <rect x="394" y="226" width="20" height="18" rx="3" /><rect x="426" y="226" width="20" height="18" rx="3" />
+            <rect x="394" y="256" width="20" height="18" rx="3" /><rect x="426" y="256" width="20" height="18" rx="3" />
+          </g>
+
+          <!-- Gedung utama -->
+          <rect x="210" y="112" width="180" height="178" rx="8" class="ill-wall ill-stroke" />
+          <rect x="200" y="100" width="200" height="20" rx="6" fill="url(#ilGrad)" />
+          <g fill="#bae6fd">
+            <rect x="226" y="136" width="28" height="26" rx="4" /><rect x="262" y="136" width="28" height="26" rx="4" />
+            <rect x="310" y="136" width="28" height="26" rx="4" /><rect x="346" y="136" width="28" height="26" rx="4" />
+            <rect x="226" y="176" width="28" height="26" rx="4" /><rect x="262" y="176" width="28" height="26" rx="4" />
+            <rect x="310" y="176" width="28" height="26" rx="4" /><rect x="346" y="176" width="28" height="26" rx="4" />
+          </g>
+          <path d="M274 290 V238 a26 26 0 0 1 52 0 V290 Z" fill="url(#ilGrad)" />
+          <line x1="300" y1="214" x2="300" y2="290" stroke="#fff" stroke-opacity="0.45" stroke-width="2" />
+
+          <!-- Papan tanda palang medis -->
+          <circle cx="300" cy="74" r="24" class="ill-wall" stroke="#0d9488" stroke-width="4" />
+          <rect x="293" y="60" width="14" height="28" rx="3" fill="#0d9488" />
+          <rect x="286" y="67" width="28" height="14" rx="3" fill="#0d9488" />
+
+          <!-- Pohon -->
+          <rect x="105" y="240" width="10" height="54" rx="3" fill="#a16207" />
+          <circle cx="110" cy="232" r="30" fill="#10b981" /><circle cx="90" cy="250" r="20" fill="#34d399" /><circle cx="131" cy="252" r="20" fill="#059669" />
+          <rect x="495" y="236" width="10" height="58" rx="3" fill="#a16207" />
+          <circle cx="500" cy="226" r="32" fill="#10b981" /><circle cx="478" cy="246" r="20" fill="#34d399" /><circle cx="523" cy="247" r="22" fill="#059669" />
+
+          <!-- Semak -->
+          <ellipse cx="196" cy="292" rx="24" ry="12" fill="#34d399" />
+          <ellipse cx="404" cy="292" rx="26" ry="12" fill="#10b981" />
+          <ellipse cx="250" cy="296" rx="15" ry="8" fill="#6ee7b7" />
+          <ellipse cx="352" cy="296" rx="15" ry="8" fill="#6ee7b7" />
+
+          <!-- Kartu detak jantung (melayang) -->
+          <g transform="translate(22 132)">
+            <g class="ill-float">
+              <rect width="112" height="48" rx="12" class="ill-wall ill-stroke" />
+              <polyline points="14,26 32,26 40,13 50,38 58,19 64,26 98,26" fill="none" stroke="#e11d48" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+          </g>
+
+          <!-- Lencana paru-paru (melayang) -->
+          <g transform="translate(548 126)">
+            <g class="ill-float ill-float-delay">
+              <circle r="34" fill="url(#ilGrad)" stroke="#fff" stroke-width="4" />
+              <rect x="-2.5" y="-20" width="5" height="17" rx="2.5" fill="#fff" />
+              <path d="M-4 -4 C-10 -10 -22 -6 -24 6 C-26 18 -22 26 -14 26 C-8 26 -4 22 -4 14 Z" fill="#fff" />
+              <path d="M-4 -4 C-10 -10 -22 -6 -24 6 C-26 18 -22 26 -14 26 C-8 26 -4 22 -4 14 Z" fill="#fff" transform="scale(-1 1)" />
+            </g>
+          </g>
+
+          <!-- Hiasan tanda plus -->
+          <g fill="#0d9488" opacity="0.35">
+            <rect x="196" y="48" width="4" height="14" rx="2" /><rect x="191" y="53" width="14" height="4" rx="2" />
+            <rect x="420" y="110" width="4" height="14" rx="2" /><rect x="415" y="115" width="14" height="4" rx="2" />
+          </g>
+        </svg>
+      </div>
+
+      <div class="feature-grid">
+        <% [
+          ['bi-person-badge', 'Basis Pengetahuan Pakar', 'Aturan disusun dan divalidasi oleh dokter spesialis paru.'],
+          ['bi-diagram-3', 'Forward Chaining', 'Penalaran runtut dari gejala menuju kesimpulan penyakit.'],
+          ['bi-ui-checks-grid', 'Pilih Gejala', 'Cukup centang gejala yang dirasakan, tanpa istilah rumit.'],
+          ['bi-lightning-charge', 'Hasil Instan', 'Kesimpulan, saran penanganan, dan jejak penalaran langsung tampil.'],
+          ['bi-clock-history', 'Riwayat Tersimpan', 'Setiap hasil diagnosa tersimpan dan dapat dicetak.'],
+        ].forEach(([ikon, judul, teks]) => { %>
+          <div class="feature-card">
+            <span class="ic"><i class="bi <%= ikon %>"></i></span>
+            <h6><%= judul %></h6>
+            <p><%= teks %></p>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+
+    <footer class="auth-footer">&copy; <%= new Date().getFullYear() %> Lerdy Fernando Simanulang &middot; SiPakar Paru</footer>
+  </div>
+</div>
+
+<!-- Modal bantuan -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpJudul" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 px-4 pt-4 pb-0">
+        <h5 class="fw-bold mb-0" id="helpJudul"><i class="bi bi-question-circle text-primary me-1"></i> Bantuan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body px-4 pb-4">
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex gap-3">
+            <span class="icon-tile tone-sky"><i class="bi bi-person-plus"></i></span>
+            <div><strong>Pasien baru</strong><p class="text-muted small mb-0">Klik <em>Daftar sebagai Pasien Baru</em>, isi data diri, lalu masuk dengan username dan password yang dibuat.</p></div>
+          </div>
+          <div class="d-flex gap-3">
+            <span class="icon-tile tone-teal"><i class="bi bi-person-badge"></i></span>
+            <div><strong>Dokter &amp; admin</strong><p class="text-muted small mb-0">Akun dokter dan admin tidak bisa didaftarkan sendiri. Hubungi administrator sistem.</p></div>
+          </div>
+          <div class="d-flex gap-3">
+            <span class="icon-tile tone-amber"><i class="bi bi-key"></i></span>
+            <div><strong>Lupa password</strong><p class="text-muted small mb-0">Hubungi administrator untuk mengatur ulang password akun Anda.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
