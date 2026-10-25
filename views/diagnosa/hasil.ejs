@@ -10,6 +10,9 @@
   const angka = n => Number(n).toLocaleString('id-ID', { maximumFractionDigits: 4 });
   const persen = n => Number(n).toLocaleString('id-ID', { maximumFractionDigits: 2 });
   const perhitungan = [...diagnosa, ...lainnya].filter(d => d.langkah.length);
+  // Pasien hanya melihat inti hasil; rincian teknis (kemungkinan lain, perhitungan CF,
+  // jejak forward chaining) hanya untuk dokter dan admin.
+  const lihatDetail = user && user.role !== 'pasien';
 %>
 
 <% if (user && user.role === 'pasien') { %>
@@ -36,6 +39,7 @@
 
   <h2 class="surat-judul">Informasi Pasien</h2>
   <div class="surat-grid">
+    <span class="surat-label">ID Pasien</span><span class="surat-isi"><%= riwayat.kodePasien || '-' %></span>
     <span class="surat-label">Nama Pasien</span><span class="surat-isi"><%= riwayat.nama %></span>
     <span class="surat-label">Jenis Kelamin</span><span class="surat-isi"><%= riwayat.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></span>
     <span class="surat-label">Tanggal Lahir</span><span class="surat-isi"><%= lahir ? tglPanjang(lahir) : '-' %></span>
@@ -108,7 +112,7 @@
           <div class="my-3">
             <div class="small opacity-75">Tingkat kepastian diagnosa</div>
             <div class="fs-1 fw-800 lh-1 my-1"><%= persen(d.persen) %>%</div>
-            <div class="small fw-semibold"><%= d.interpretasi %><% if (d.total) { %> &middot; <%= d.cocok %>/<%= d.total %> gejala aturan <%= d.rule %> cocok<% } %></div>
+            <div class="small fw-semibold"><%= d.interpretasi %><% if (lihatDetail && d.total) { %> &middot; <%= d.cocok %>/<%= d.total %> gejala aturan <%= d.rule %> cocok<% } %></div>
           </div>
           <p><%= d.deskripsi %></p>
         </div>
@@ -132,6 +136,7 @@
       </div>
     <% } %>
 
+    <% if (lihatDetail) { %>
     <% if (lainnya.length) { %>
       <div class="card mb-4">
         <div class="card-header d-flex align-items-center gap-2">
@@ -224,6 +229,7 @@
         <p class="text-muted small mt-3 mb-0">Inferensi berhenti setelah <%= jumlahIterasi %> iterasi karena tidak ada fakta baru yang dihasilkan.</p>
       </div>
     </div>
+    <% } %>
   </div>
 
   <div class="col-lg-4">
@@ -237,6 +243,7 @@
           </div>
         </div>
         <dl class="info-list">
+          <% if (riwayat.kodePasien) { %><dt>ID Pasien</dt><dd><%= riwayat.kodePasien %></dd><% } %>
           <dt>Umur</dt><dd><%= riwayat.umur %> tahun</dd>
           <dt>Kelamin</dt><dd><%= riwayat.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan' %></dd>
           <dt>No. Hasil</dt><dd>#<%= String(riwayat.id).padStart(5, '0') %></dd>

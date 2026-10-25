@@ -1,0 +1,54 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header no-print">
+  <div>
+    <a href="/admin/user" class="small text-muted text-decoration-none"><i class="bi bi-arrow-left"></i> Kelola Akun</a>
+    <h1 class="page-title mt-1"><%= title %></h1>
+    <p class="page-subtitle">Berikan data login ini kepada pasien. Kata sandi hanya ditampilkan sekali di halaman ini.</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xl-6 col-lg-8">
+    <div class="card">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <span class="avatar soft"><%= data.nama.trim().charAt(0).toUpperCase() %></span>
+          <div class="lh-sm">
+            <div class="fw-bold"><%= data.nama %></div>
+            <small class="text-muted">Data login SiPakar Paru</small>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <div>
+            <label class="form-label" for="kredKode">ID Pasien (untuk login)</label>
+            <div class="input-group">
+              <input class="form-control fw-bold fs-5" id="kredKode" value="<%= data.kodePasien %>" readonly>
+              <button class="btn btn-outline-primary no-print" type="button" data-copy="#kredKode"><i class="bi bi-copy"></i> Salin</button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label" for="kredPassword">Kata sandi awal</label>
+            <div class="input-group">
+              <input class="form-control fw-bold fs-5 font-monospace" id="kredPassword" value="<%= data.password %>" readonly>
+              <button class="btn btn-outline-primary no-print" type="button" data-copy="#kredPassword"><i class="bi bi-copy"></i> Salin</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warning small mt-4 mb-0 d-flex gap-2">
+          <i class="bi bi-shield-exclamation"></i>
+          <div>Pasien <strong>wajib mengganti kata sandi</strong> saat login pertama. Jika kata sandi ini hilang, buka Edit Akun pasien lalu pilih <strong>Reset Kata Sandi</strong>.</div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end mt-4 no-print">
+          <button class="btn btn-ghost" type="button" onclick="window.print()"><i class="bi bi-printer"></i> Cetak</button>
+          <a href="/admin/user" class="btn btn-primary"><i class="bi bi-check-lg"></i> Selesai</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

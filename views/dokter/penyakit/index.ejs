@@ -33,12 +33,10 @@
               <td class="d-none d-md-table-cell text-muted small" style="max-width: 28rem"><span class="clamp-3"><%= p.deskripsi %></span></td>
               <td class="text-end text-nowrap">
                 <a href="/dokter/penyakit/<%= p.id %>/edit" class="btn btn-ghost btn-icon btn-sm" aria-label="Edit"><i class="bi bi-pencil"></i></a>
-                <% if (isKetua) { %>
                 <form action="/dokter/penyakit/<%= p.id %>?_method=DELETE" method="POST" class="d-inline"
                       data-confirm="Penyakit <%= p.kode %> - <%= p.nama %> beserta seluruh aturannya akan dihapus.">
                   <button class="btn btn-ghost btn-icon btn-sm danger" aria-label="Hapus"><i class="bi bi-trash3"></i></button>
                 </form>
-                <% } %>
               </td>
             </tr>
           <% }) %>

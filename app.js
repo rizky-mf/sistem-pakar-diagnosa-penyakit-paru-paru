@@ -33,7 +33,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(require('./middleware/auth').statusDokter);
+app.use(require('./middleware/auth').wajibGantiPassword);
 
 app.use('/', require('./routes/index'));
 app.use('/admin', require('./routes/admin'));

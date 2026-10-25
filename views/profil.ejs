@@ -7,6 +7,13 @@
   </div>
 </div>
 
+<% if (wajibGanti) { %>
+  <div class="alert alert-warning d-flex gap-2 align-items-start">
+    <i class="bi bi-shield-exclamation fs-5"></i>
+    <div><strong>Buat kata sandi baru.</strong> Kata sandi akun Anda dibuat oleh admin. Buat kata sandi baru milik Anda sendiri sebelum menggunakan aplikasi.</div>
+  </div>
+<% } %>
+
 <% if (errors.length) { %>
   <div class="alert alert-danger small">
     <ul class="mb-0 ps-3"><% errors.forEach(e => { %><li><%= e %></li><% }) %></ul>
@@ -19,6 +26,16 @@
       <div class="card h-100">
         <div class="card-header d-flex align-items-center gap-2"><i class="bi bi-person-vcard text-primary"></i> Data diri</div>
         <div class="card-body d-flex flex-column gap-3">
+          <% if (kodePasien) { %>
+          <div>
+            <label class="form-label" for="kodePasien">ID Pasien</label>
+            <div class="input-icon">
+              <i class="bi bi-person-badge"></i>
+              <input class="form-control fw-semibold" id="kodePasien" value="<%= kodePasien %>" readonly aria-describedby="kodePasienHint">
+            </div>
+            <div class="form-hint" id="kodePasienHint">Dibuat otomatis dan tidak dapat diubah. Bisa dipakai untuk login selain username.</div>
+          </div>
+          <% } %>
           <div>
             <label class="form-label" for="nama">Nama Lengkap</label>
             <input class="form-control" id="nama" name="nama" value="<%= old.nama || '' %>" autocomplete="name" required>
@@ -43,8 +60,9 @@
             <label class="form-label" for="username">Username</label>
             <div class="input-icon">
               <i class="bi bi-at"></i>
-              <input class="form-control" id="username" name="username" value="<%= old.username || '' %>" autocomplete="username" required>
+              <input class="form-control" id="username" name="username" value="<%= old.username || '' %>" autocomplete="username" required aria-describedby="usernameHint">
             </div>
+            <div class="form-hint" id="usernameHint">Dipakai untuk login<%= kodePasien ? ' (selain ID pasien)' : '' %>. Jika diubah, login berikutnya memakai username baru.</div>
           </div>
         </div>
       </div>
@@ -54,7 +72,8 @@
       <div class="card h-100">
         <div class="card-header d-flex align-items-center gap-2"><i class="bi bi-shield-lock text-primary"></i> Ganti kata sandi</div>
         <div class="card-body d-flex flex-column gap-3">
-          <p class="small text-muted mb-0">Kosongkan bila tidak ingin mengganti kata sandi.</p>
+          <p class="small text-muted mb-0"><%= wajibGanti ? 'Wajib diisi: buat kata sandi baru Anda.' : 'Kosongkan bila tidak ingin mengganti kata sandi.' %></p>
+          <% if (!wajibGanti) { %>
           <div>
             <label class="form-label" for="passwordLama">Kata Sandi Lama</label>
             <div class="input-icon has-action">
@@ -63,11 +82,12 @@
               <button type="button" class="input-action" data-toggle-password="#passwordLama" aria-label="Tampilkan kata sandi"><i class="bi bi-eye"></i></button>
             </div>
           </div>
+          <% } %>
           <div>
             <label class="form-label" for="passwordBaru">Kata Sandi Baru</label>
             <div class="input-icon has-action">
               <i class="bi bi-lock"></i>
-              <input class="form-control" id="passwordBaru" name="passwordBaru" type="password" minlength="6" placeholder="Minimal 6 karakter" autocomplete="new-password">
+              <input class="form-control" id="passwordBaru" name="passwordBaru" type="password" minlength="6" placeholder="Minimal 6 karakter" autocomplete="new-password" <%= wajibGanti ? 'required' : '' %>>
               <button type="button" class="input-action" data-toggle-password="#passwordBaru" aria-label="Tampilkan kata sandi"><i class="bi bi-eye"></i></button>
             </div>
           </div>
@@ -75,7 +95,7 @@
             <label class="form-label" for="konfirmasi">Ulangi Kata Sandi Baru</label>
             <div class="input-icon has-action">
               <i class="bi bi-lock"></i>
-              <input class="form-control" id="konfirmasi" name="konfirmasi" type="password" minlength="6" autocomplete="new-password">
+              <input class="form-control" id="konfirmasi" name="konfirmasi" type="password" minlength="6" autocomplete="new-password" <%= wajibGanti ? 'required' : '' %>>
               <button type="button" class="input-action" data-toggle-password="#konfirmasi" aria-label="Tampilkan kata sandi"><i class="bi bi-eye"></i></button>
             </div>
           </div>
@@ -85,7 +105,7 @@
   </div>
 
   <div class="d-flex justify-content-end gap-2 mt-4">
-    <a href="<%= kembali %>" class="btn btn-ghost">Batal</a>
+    <% if (!wajibGanti) { %><a href="<%= kembali %>" class="btn btn-ghost">Batal</a><% } %>
     <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> Simpan Perubahan</button>
   </div>
 </form>

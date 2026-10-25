@@ -1,5 +1,9 @@
 <%- include('../../partials/header') %>
-<% const isEdit = !!item.id; %>
+<%
+  const isEdit = !!item.id;
+  const pasien = item.role === 'pasien';
+  const tglInput = item.tanggalLahir ? String(item.tanggalLahir).slice(0, 10) : '';
+%>
 
 <div class="page-header">
   <div>
@@ -14,41 +18,73 @@
       <div class="card-body p-4">
         <form action="<%= action %>" method="POST">
           <div class="row g-3">
+            <%# Role dipilih lebih dulu karena isian berikutnya bergantung pada role %>
+            <div class="col-md-6">
+              <label class="form-label" for="role">Role</label>
+              <% if (isEdit && (pasien || item.id === user.id)) { %>
+                <input class="form-control text-capitalize" id="role" value="<%= item.role %>" disabled>
+                <div class="form-hint"><%= pasien ? 'Role pasien tidak dapat diubah.' : 'Anda tidak dapat mengubah role akun sendiri.' %></div>
+              <% } else { %>
+                <select class="form-select" id="role" name="role" data-role-switch>
+                  <option value="dokter" <%= item.role === 'dokter' ? 'selected' : '' %>>Dokter (pakar)</option>
+                  <option value="admin" <%= item.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                  <% if (!isEdit) { %><option value="pasien">Pasien</option><% } %>
+                </select>
+              <% } %>
+            </div>
+            <% if (isEdit && pasien) { %>
+              <div class="col-md-6">
+                <label class="form-label" for="kodePasien">ID Pasien</label>
+                <input class="form-control fw-semibold" id="kodePasien" value="<%= item.kodePasien || '-' %>" readonly>
+                <div class="form-hint">Dibuat otomatis, tidak dapat diubah.</div>
+              </div>
+            <% } else { %>
+              <div class="col-md-6 d-none d-md-block" aria-hidden="true"></div>
+            <% } %>
+
             <div class="col-md-6">
               <label class="form-label" for="nama">Nama lengkap</label>
               <input class="form-control" id="nama" name="nama" value="<%= item.nama || '' %>" required>
             </div>
-            <div class="col-md-6">
+
+            <%# Isian khusus pasien %>
+            <div class="col-md-6" data-untuk-role="pasien" <%= pasien ? '' : 'hidden' %>>
+              <label class="form-label" for="tanggalLahir">Tanggal lahir</label>
+              <input class="form-control" id="tanggalLahir" name="tanggalLahir" type="date" value="<%= tglInput %>" required <%= pasien ? '' : 'disabled' %>>
+            </div>
+            <div class="col-md-6" data-untuk-role="pasien" <%= pasien ? '' : 'hidden' %>>
+              <label class="form-label" for="jenisKelamin">Jenis kelamin</label>
+              <select class="form-select" id="jenisKelamin" name="jenisKelamin" required <%= pasien ? '' : 'disabled' %>>
+                <option value="" disabled <%= item.jenisKelamin ? '' : 'selected' %>>Pilih</option>
+                <option value="L" <%= item.jenisKelamin === 'L' ? 'selected' : '' %>>Laki-laki</option>
+                <option value="P" <%= item.jenisKelamin === 'P' ? 'selected' : '' %>>Perempuan</option>
+              </select>
+            </div>
+
+            <%# Username: staf selalu; pasien hanya saat edit (saat dibuat, username = ID pasien) %>
+            <div class="col-md-6" <%- isEdit ? '' : 'data-untuk-role="admin dokter"' %>>
               <label class="form-label" for="username">Username</label>
               <div class="input-icon">
                 <i class="bi bi-at"></i>
                 <input class="form-control" id="username" name="username" value="<%= item.username || '' %>" required>
               </div>
+              <% if (pasien) { %><div class="form-hint">Pasien juga dapat login dengan ID pasien.</div><% } %>
             </div>
-            <div class="col-md-6">
-              <label class="form-label" for="password">Password</label>
-              <input class="form-control" id="password" name="password" type="password" minlength="6" autocomplete="new-password" <%= isEdit ? '' : 'required' %>>
-              <div class="form-hint"><%= isEdit ? 'Kosongkan jika tidak ingin mengganti password.' : 'Minimal 6 karakter.' %></div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label" for="role">Role</label>
-              <% if (item.role === 'pasien' || item.id === user.id) { %>
-                <input class="form-control text-capitalize" id="role" value="<%= item.role %>" disabled>
-                <div class="form-hint"><%= item.role === 'pasien' ? 'Role pasien tidak dapat diubah.' : 'Anda tidak dapat mengubah role akun sendiri.' %></div>
-              <% } else { %>
-                <select class="form-select" id="role" name="role">
-                  <option value="dokter" <%= item.role === 'dokter' ? 'selected' : '' %>>Dokter (pakar)</option>
-                  <option value="admin" <%= item.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                </select>
-              <% } %>
-            </div>
-            <% if (item.role !== 'pasien' && item.id !== user.id) { %>
-              <div class="col-12">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="ketua" name="ketua" value="1" <%= item.ketua ? 'checked' : '' %>>
-                  <label class="form-check-label" for="ketua">Jadikan <strong>dokter ketua</strong></label>
+
+            <% if (!pasien) { %>
+              <div class="col-md-6" data-untuk-role="admin dokter">
+                <label class="form-label" for="password">Password</label>
+                <input class="form-control" id="password" name="password" type="password" minlength="6" autocomplete="new-password" <%= isEdit ? '' : 'required' %>>
+                <div class="form-hint"><%= isEdit ? 'Kosongkan jika tidak ingin mengganti password.' : 'Minimal 6 karakter.' %></div>
+              </div>
+            <% } %>
+
+            <% if (!isEdit) { %>
+              <div class="col-12" data-untuk-role="pasien" hidden>
+                <div class="alert alert-info small mb-0 d-flex gap-2">
+                  <i class="bi bi-info-circle"></i>
+                  <div><strong>ID pasien</strong> (misalnya PSN20260001) dibuat otomatis dan menjadi username. <strong>Kata sandi awal</strong> dibuat acak dan ditampilkan sekali setelah disimpan, lalu wajib diganti pasien saat login pertama.</div>
                 </div>
-                <div class="form-hint">Hanya berlaku untuk role dokter. Dokter ketua memvalidasi usulan penyakit, gejala, dan aturan dari dokter lain. Hanya ada satu ketua; memilih ketua baru melepas status ketua sebelumnya.</div>
               </div>
             <% } %>
           </div>
@@ -60,6 +96,21 @@
         </form>
       </div>
     </div>
+
+    <% if (isEdit && pasien) { %>
+      <div class="card mt-3">
+        <div class="card-body p-4 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+          <div>
+            <h6 class="fw-bold mb-1"><i class="bi bi-key text-primary me-1"></i> Reset kata sandi</h6>
+            <p class="small text-muted mb-0">Membuat kata sandi acak baru untuk diberikan ke pasien. Pasien wajib menggantinya saat login berikutnya.</p>
+          </div>
+          <form action="/admin/user/<%= item.id %>/reset-password" method="POST"
+                data-confirm="Kata sandi <%= item.nama %> akan diganti dengan kata sandi acak baru. Kata sandi lama tidak berlaku lagi.">
+            <button class="btn btn-outline-primary" type="submit"><i class="bi bi-arrow-repeat"></i> Reset Kata Sandi</button>
+          </form>
+        </div>
+      </div>
+    <% } %>
   </div>
 </div>
 

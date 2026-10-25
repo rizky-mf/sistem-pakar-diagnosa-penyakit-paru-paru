@@ -25,8 +25,10 @@ async function main() {
 
   const { sequelize, Penyakit, Gejala, Rule, RuleGejala, User } = require('../models');
   const data = require('../seeders/data');
+  const { buatAkunPasien } = require('../services/akunPasien');
 
   await sequelize.sync({ force: true });
+  await require('../models/constraints').terapkanCheckCF(sequelize);
 
   const penyakitList = await Penyakit.bulkCreate(data.penyakit);
   const gejalaList = await Gejala.bulkCreate(data.gejala);
@@ -42,7 +44,9 @@ async function main() {
   }
 
   for (const u of data.users) {
-    await User.create({ ...u, password: await bcrypt.hash(u.password, 10) });
+    const akun = { ...u, password: await bcrypt.hash(u.password, 10) };
+    if (u.role === 'pasien') await buatAkunPasien(User, akun);
+    else await User.create(akun);
   }
 
   console.log('Database siap.');

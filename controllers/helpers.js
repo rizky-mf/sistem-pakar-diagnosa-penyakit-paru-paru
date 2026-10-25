@@ -1,6 +1,5 @@
 const { Penyakit, Gejala, Rule, Riwayat, RiwayatPenyakit, detailRiwayat } = require('../models');
-const { forwardChaining } = require('../services/forwardChaining');
-const { rankingPenyakit } = require('../services/certaintyFactor');
+const { POLA_KODE } = require('../services/akunPasien');
 
 function pesanError(err) {
   if (err.name === 'SequelizeUniqueConstraintError') return 'Kode sudah digunakan, gunakan kode lain.';
@@ -26,50 +25,72 @@ async function muatRules() {
 }
 
 /**
- * Menyusun data halaman hasil dari riwayat (dimuat dengan detailRiwayat).
- * Jejak forward chaining dan langkah perhitungan CF dihitung ulang dari
- * gejala & CF user yang tersimpan, memakai basis aturan saat ini.
+ * Menyusun data halaman hasil dari riwayat (dimuat dengan rincianRiwayat).
+ * Seluruh angka dibaca dari data yang disimpan saat diagnosa (tidak dihitung
+ * ulang), sehingga hasil lama tetap sama walaupun basis aturan sudah berubah.
  */
-async function dataHasil(riwayat) {
-  const rules = await muatRules();
-  const cfUser = Object.fromEntries(riwayat.daftarGejala.map((g) => [g.kode, g.cfUser]));
-  const fc = forwardChaining(Object.keys(cfUser), rules);
-  const rincian = Object.fromEntries(rankingPenyakit(rules, cfUser, fc.jejak).map((r) => [r.konklusi, r]));
-
-  const lengkapi = (p) => {
-    const r = rincian[p.kode] || {};
-    return {
-      kode: p.kode,
-      nama: p.nama,
-      deskripsi: p.deskripsi,
-      solusi: p.solusi,
-      cf: p.cf,
-      persen: p.persen,
-      interpretasi: p.interpretasi,
-      rule: r.rule,
-      cocok: r.cocok,
-      total: r.total,
-      langkah: r.langkah || [],
-    };
-  };
+function dataHasil(riwayat) {
+  const lengkapi = (p) => ({
+    kode: p.kode,
+    nama: p.nama,
+    deskripsi: p.deskripsi,
+    solusi: p.solusi,
+    cf: p.cf,
+    persen: p.persen,
+    interpretasi: p.interpretasi,
+    rule: p.ruleKode,
+    cocok: p.gejalaCocok,
+    total: p.gejalaTotal,
+    langkah: (p.langkah || []).map((l) => ({
+      kode: l.kodeFakta,
+      cfPakar: l.cfPakar,
+      cfUser: l.cfUser,
+      cfGejala: l.cfGejala,
+      cfKombinasi: l.cfKombinasi,
+    })),
+  });
 
   return {
     diagnosa: riwayat.diagnosa.map(lengkapi),
     lainnya: riwayat.lainnya.map(lengkapi),
-    jejak: fc.jejak,
-    jumlahIterasi: fc.jumlahIterasi,
+    jejak: (riwayat.jejak || []).map((j) => ({
+      iterasi: j.iterasi,
+      rule: j.ruleKode,
+      konklusi: j.konklusiKode,
+      premis: (j.premis || []).map((p) => p.kodeFakta),
+    })),
+    jumlahIterasi: riwayat.jumlahIterasi,
   };
 }
 
 // Validasi data diri pasien, dipakai saat registrasi dan edit profil
-function validasiDataPasien({ nama, username, jenisKelamin, tanggalLahir }) {
+// Data diri pasien tanpa username (dipakai juga saat admin membuat akun pasien)
+function validasiDiriPasien({ nama, jenisKelamin, tanggalLahir }) {
   const errors = [];
   if (!nama) errors.push('Nama wajib diisi.');
-  if (!/^[a-zA-Z0-9_.]{4,50}$/.test(username)) errors.push('Username 4-50 karakter (huruf, angka, titik, garis bawah).');
   if (!['L', 'P'].includes(jenisKelamin)) errors.push('Jenis kelamin wajib dipilih.');
   const lahir = new Date(tanggalLahir);
   if (!tanggalLahir || isNaN(lahir) || lahir > new Date()) errors.push('Tanggal lahir tidak valid.');
   return errors;
+}
+
+/**
+ * Username 4-50 karakter. Format ID pasien (PSN + angka) hanya boleh dipakai
+ * sebagai username oleh pemilik ID itu sendiri, agar login dengan ID tidak ambigu.
+ */
+function validasiUsername(username, kodeMilikSendiri = null) {
+  const errors = [];
+  const milikSendiri = kodeMilikSendiri && username.toUpperCase() === kodeMilikSendiri.toUpperCase();
+  if (POLA_KODE.test(username)) {
+    if (!milikSendiri) errors.push('Username tidak boleh berformat ID pasien (PSN diikuti angka).');
+  } else if (!/^[a-zA-Z0-9_.]{4,50}$/.test(username)) {
+    errors.push('Username 4-50 karakter (huruf, angka, titik, garis bawah).');
+  }
+  return errors;
+}
+
+function validasiDataPasien({ nama, username, jenisKelamin, tanggalLahir }, kodeMilikSendiri = null) {
+  return [...validasiDiriPasien({ nama, jenisKelamin, tanggalLahir }), ...validasiUsername(username, kodeMilikSendiri)];
 }
 
 // Jumlah hasil diagnosa (penyakit utama) per penyakit, untuk grafik di dashboard
@@ -103,4 +124,13 @@ function terbaruRiwayat(limit) {
   return Riwayat.findAll({ ...detailRiwayat, limit });
 }
 
-module.exports = { pesanError, muatRules, dataHasil, validasiDataPasien, distribusiDiagnosa, terbaruRiwayat };
+module.exports = {
+  pesanError,
+  muatRules,
+  dataHasil,
+  validasiDiriPasien,
+  validasiUsername,
+  validasiDataPasien,
+  distribusiDiagnosa,
+  terbaruRiwayat,
+};

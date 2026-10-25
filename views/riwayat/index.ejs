@@ -32,13 +32,13 @@
         </thead>
         <tbody id="tabelRiwayat">
           <% riwayat.forEach(r => { const namaHasil = r.diagnosa.map(d => d.nama).join(', '); %>
-            <tr data-filter-item data-search="<%= r.nama %> <%= namaHasil %>">
+            <tr data-filter-item data-search="<%= r.nama %> <%= r.kodePasien || '' %> <%= namaHasil %>">
               <td>
                 <div class="d-flex align-items-center gap-2">
                   <span class="avatar sm soft"><%= r.nama.trim().charAt(0).toUpperCase() %></span>
                   <div class="lh-sm">
                     <div class="cell-title"><%= r.nama %></div>
-                    <div class="cell-sub"><%= r.umur %> th &middot; <%= r.jenisKelamin === 'L' ? 'L' : 'P' %></div>
+                    <div class="cell-sub"><% if (r.kodePasien) { %><%= r.kodePasien %> &middot; <% } %><%= r.umur %> th &middot; <%= r.jenisKelamin === 'L' ? 'L' : 'P' %></div>
                   </div>
                 </div>
               </td>

@@ -3,7 +3,7 @@
 <div class="page-header">
   <div>
     <h1 class="page-title">Kelola Akun</h1>
-    <p class="page-subtitle">Akun admin dan dokter dibuat di sini. Pasien mendaftar sendiri melalui halaman Daftar.</p>
+    <p class="page-subtitle">Kelola akun admin, dokter, dan pasien. Pasien juga dapat mendaftar sendiri melalui halaman Daftar.</p>
   </div>
   <div class="d-flex flex-wrap gap-2">
     <div class="input-icon" style="min-width: min(100%, 15rem)">
@@ -22,17 +22,17 @@
       </thead>
       <tbody id="tabelUser">
         <% users.forEach(u => { %>
-          <tr data-filter-item data-search="<%= u.nama %> <%= u.username %> <%= u.role %>">
+          <tr data-filter-item data-search="<%= u.nama %> <%= u.username %> <%= u.kodePasien || '' %> <%= u.role %>">
             <td>
               <div class="d-flex align-items-center gap-2">
                 <span class="avatar sm <%= u.role === 'pasien' ? 'soft' : '' %>"><%= u.nama.trim().charAt(0).toUpperCase() %></span>
                 <div class="lh-sm">
                   <div class="cell-title"><%= u.nama %> <% if (u.id === user.id) { %><span class="badge badge-code neutral ms-1">Anda</span><% } %></div>
-                  <div class="cell-sub">@<%= u.username %></div>
+                  <div class="cell-sub">@<%= u.username %><% if (u.kodePasien && u.kodePasien !== u.username) { %> &middot; <%= u.kodePasien %><% } %><% if (u.wajibGantiPassword) { %> &middot; <span class="text-warning-emphasis">belum ganti kata sandi</span><% } %></div>
                 </div>
               </div>
             </td>
-            <td><span class="badge badge-role <%= u.role %>"><%= u.role %></span><% if (u.ketua) { %> <span class="badge bg-warning-subtle text-warning-emphasis">ketua</span><% } %></td>
+            <td><span class="badge badge-role <%= u.role %>"><%= u.role %></span></td>
             <td class="d-none d-md-table-cell"><%= u.jenisKelamin === 'L' ? 'Laki-laki' : u.jenisKelamin === 'P' ? 'Perempuan' : '-' %></td>
             <td class="d-none d-lg-table-cell text-muted"><%= u.tanggalLahir ? new Date(u.tanggalLahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-' %></td>
             <td class="text-end text-nowrap">

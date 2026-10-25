@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<%
+  const angka = (s) => String(s || '').replace(/\D/g, '');
+  const kanal = [
+    kontak.telepon && { ikon: 'bi-telephone', tone: 'tone-teal', judul: 'Telepon', isi: kontak.telepon, href: 'tel:' + angka(kontak.telepon), aksi: 'Hubungi' },
+    kontak.whatsapp && { ikon: 'bi-whatsapp', tone: 'tone-sky', judul: 'WhatsApp', isi: /^\d+$/.test(kontak.whatsapp) ? '+' + kontak.whatsapp : kontak.whatsapp, href: 'https://wa.me/' + angka(kontak.whatsapp), aksi: 'Kirim pesan', baru: true },
+    kontak.email && { ikon: 'bi-envelope', tone: 'tone-violet', judul: 'Email', isi: kontak.email, href: 'mailto:' + kontak.email, aksi: 'Kirim email' },
+    kontak.alamat && { ikon: 'bi-geo-alt', tone: 'tone-amber', judul: 'Alamat', isi: kontak.alamat, href: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(kontak.alamat), aksi: 'Buka peta', baru: true },
+  ].filter(Boolean);
+%>
+
+<div class="page-header">
+  <div>
+    <span class="eyebrow mb-2"><i class="bi bi-headset"></i> Bantuan</span>
+    <h1 class="page-title mt-2">Kontak Kami</h1>
+    <p class="page-subtitle">Punya pertanyaan tentang hasil diagnosa atau ingin berkonsultasi lebih lanjut? Hubungi <%= kontak.instansi %>.</p>
+  </div>
+</div>
+
+<div class="row g-3">
+  <% kanal.forEach(k => { %>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card card-hover h-100">
+        <div class="card-body d-flex flex-column">
+          <div class="icon-tile <%= k.tone %> mb-3"><i class="bi <%= k.ikon %>"></i></div>
+          <h6 class="fw-bold mb-1"><%= k.judul %></h6>
+          <p class="text-muted text-break mb-3"><%= k.isi %></p>
+          <a class="btn btn-soft mt-auto align-self-start" href="<%= k.href %>"<% if (k.baru) { %> target="_blank" rel="noopener"<% } %>>
+            <%= k.aksi %> <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="fw-bold mb-3"><i class="bi bi-clock text-primary me-1"></i> Jam Layanan</h6>
+        <dl class="info-list mb-0">
+          <% kontak.jamLayanan.forEach(([hari, jam]) => { %>
+            <dt><%= hari %></dt><dd><%= jam %></dd>
+          <% }) %>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h6 class="fw-bold mb-3"><i class="bi bi-info-circle text-primary me-1"></i> Sebelum Menghubungi Kami</h6>
+        <ul class="text-muted mb-0 ps-3">
+          <li class="mb-2">Siapkan hasil diagnosa dari menu <a href="/riwayat-saya">Riwayat Saya</a> agar petugas dapat memahami keluhan Anda.</li>
+          <li class="mb-2">Hasil sistem pakar ini merupakan informasi awal, <strong>bukan pengganti pemeriksaan dokter</strong>.</li>
+          <li>Untuk pemeriksaan lanjutan, datang langsung ke <%= kontak.instansi %> sesuai jam layanan.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

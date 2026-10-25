@@ -11,6 +11,8 @@ const sequelize = new Sequelize(
     dialect: 'mysql',
     logging: false,
     timezone: '+07:00',
+    // Kolom DECIMAL (nilai CF) dikembalikan sebagai angka, bukan string
+    dialectOptions: { decimalNumbers: true },
     define: {
       freezeTableName: true,
       underscored: true,

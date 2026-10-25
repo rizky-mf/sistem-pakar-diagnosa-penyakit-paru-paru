@@ -15,8 +15,10 @@ router.get('/', dashboard.index);
 router.get('/user', user.index);
 router.get('/user/tambah', user.create);
 router.post('/user', user.store);
+router.get('/user/kredensial', user.kredensial);
 router.get('/user/:id/edit', user.edit);
 router.put('/user/:id', user.update);
+router.post('/user/:id/reset-password', user.resetPassword);
 router.delete('/user/:id', user.destroy);
 
 router.get('/riwayat', riwayat.index);

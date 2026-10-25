@@ -7,14 +7,13 @@
   const aktif = (href, persis) => persis ? (currentPath === href || currentPath === href + '/') : currentPath.startsWith(href);
 
   // Menu sidebar panel: [href, ikon, label, badge?] atau ['#label', judul grup]
-  const ketua = typeof isKetua !== 'undefined' && isKetua;
-  const badgeUsulan = typeof jumlahUsulan !== 'undefined' ? jumlahUsulan : 0;
   const menuRole = {
     pasien: [
       ['/diagnosa', 'bi-clipboard2-pulse', 'Diagnosa'],
       ['/riwayat-saya', 'bi-clock-history', 'Riwayat Saya'],
       ['#label', 'Informasi'],
       ['/penyakit', 'bi-virus', 'Info Penyakit'],
+      ['/kontak', 'bi-headset', 'Kontak Kami'],
     ],
     admin: [
         ['/admin', 'bi-grid-1x2', 'Dashboard'],
@@ -28,7 +27,6 @@
         ['/dokter/penyakit', 'bi-virus', 'Penyakit'],
         ['/dokter/gejala', 'bi-list-check', 'Gejala'],
         ['/dokter/rule', 'bi-diagram-3', 'Aturan (Rule)'],
-        ['/dokter/usulan', 'bi-patch-check', ketua ? 'Validasi Usulan' : 'Usulan Saya', badgeUsulan],
         ['#label', 'Pasien'],
         ['/dokter/riwayat', 'bi-clock-history', 'Riwayat Diagnosa'],
     ],
@@ -88,7 +86,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Tutup"></button>
       </div>
       <div class="offcanvas-body">
-        <a class="brand d-none d-lg-inline-flex px-2 pt-1" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Panel <span class="text-capitalize"><%= role %></span><%= ketua ? ' (Ketua)' : '' %></small></span></a>
+        <a class="brand d-none d-lg-inline-flex px-2 pt-1" href="/"><span class="brand-logo"><i class="bi bi-lungs"></i></span><span>SiPakar Paru<small>Panel <span class="text-capitalize"><%= role %></span></small></span></a>
         <nav class="d-flex flex-column gap-1 mt-3">
           <% menu.forEach(([href, a, b, badge], i) => { %>
             <% if (href === '#label') { %>

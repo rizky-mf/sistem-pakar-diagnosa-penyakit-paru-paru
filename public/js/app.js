@@ -126,6 +126,38 @@
     if (hapus) hapus.closest('[data-baris]').remove();
   });
 
+  // ---------- Isian sesuai role: <select data-role-switch> + <div data-untuk-role="pasien"> ----------
+  // Bagian yang tidak sesuai disembunyikan dan isiannya dinonaktifkan agar tidak ikut dikirim/divalidasi
+  document.querySelectorAll('[data-role-switch]').forEach((select) => {
+    const form = select.closest('form');
+    const terapkan = () => {
+      form.querySelectorAll('[data-untuk-role]').forEach((el) => {
+        const tampil = el.dataset.untukRole.split(' ').includes(select.value);
+        el.hidden = !tampil;
+        el.querySelectorAll('input, select, textarea').forEach((f) => (f.disabled = !tampil));
+      });
+    };
+    select.addEventListener('change', terapkan);
+    terapkan();
+  });
+
+  // ---------- Salin teks: <button data-copy="#input"> ----------
+  document.querySelectorAll('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const input = document.querySelector(btn.dataset.copy);
+      if (!input) return;
+      try {
+        await navigator.clipboard.writeText(input.value);
+      } catch (e) {
+        input.select();
+        document.execCommand('copy');
+      }
+      const asli = btn.innerHTML;
+      btn.innerHTML = '<i class="bi bi-check2"></i> Tersalin';
+      setTimeout(() => (btn.innerHTML = asli), 1500);
+    });
+  });
+
   // ---------- Modal detail penyakit ----------
   const modalDetail = document.getElementById('detailModal');
   if (modalDetail) {

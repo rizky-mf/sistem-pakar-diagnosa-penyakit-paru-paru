@@ -1,7 +1,7 @@
-const { sequelize, Penyakit, Gejala, Riwayat, User, detailRiwayat, hitungUmur } = require('../models');
+const { sequelize, Penyakit, Gejala, Riwayat, User, detailRiwayat, rincianRiwayat, hitungUmur } = require('../models');
 const { muatRules, dataHasil } = require('./helpers');
-const { forwardChaining } = require('../services/forwardChaining');
-const { TINGKAT_KEYAKINAN, rankingPenyakit } = require('../services/certaintyFactor');
+const { TINGKAT_KEYAKINAN } = require('../services/certaintyFactor');
+const { jalankanInferensi, barisRiwayat } = require('../services/inferensi');
 
 // Keyakinan pasien dikirim sebagai cf_<kode gejala>; hanya nilai > 0 yang dianggap dirasakan
 function keyakinanUser(body, semuaGejala) {
@@ -58,16 +58,12 @@ exports.proses = async (req, res, next) => {
     const gejalaDipilih = semuaGejala
       .filter((g) => g.kode in cfUser)
       .map((g) => ({ gejalaId: g.id, cfUser: cfUser[g.kode] }));
-    const penyakitByKode = Object.fromEntries(semuaPenyakit.map((p) => [p.kode, p]));
+    const idPenyakit = Object.fromEntries(semuaPenyakit.map((p) => [p.kode, p.id]));
 
-    // === 1. Forward chaining: telusuri aturan yang seluruh premisnya terpenuhi ===
-    const fc = forwardChaining(Object.keys(cfUser), rules);
-
-    // === 2. Certainty factor: hitung CF tiap penyakit dari gejala yang cocok, urutkan ===
-    // Disimpan berurutan dari CF tertinggi; urutan pertama menjadi hasil diagnosa
-    const hasilPenyakit = rankingPenyakit(rules, cfUser, fc.jejak)
-      .filter((r) => penyakitByKode[r.konklusi])
-      .map((r) => ({ penyakitId: penyakitByKode[r.konklusi].id, cf: r.cf }));
+    // 1. Forward chaining (jejak penalaran) + 2. certainty factor (CF tiap penyakit).
+    // Seluruh hasil beserta langkah perhitungannya disimpan, sehingga riwayat tidak
+    // berubah walaupun aturan atau CF pakar diubah setelahnya.
+    const hasil = barisRiwayat(jalankanInferensi(rules, cfUser), idPenyakit);
 
     const riwayat = await sequelize.transaction((transaction) =>
       Riwayat.create(
@@ -75,9 +71,16 @@ exports.proses = async (req, res, next) => {
           userId: req.session.user.id,
           tanggalDiagnosa: new Date(),
           daftarGejala: gejalaDipilih,
-          daftarPenyakit: hasilPenyakit,
+          ...hasil,
         },
-        { include: [{ association: 'daftarGejala' }, { association: 'daftarPenyakit' }], transaction }
+        {
+          include: [
+            { association: 'daftarGejala' },
+            { association: 'daftarPenyakit', include: [{ association: 'langkah' }] },
+            { association: 'jejak', include: [{ association: 'premis' }] },
+          ],
+          transaction,
+        }
       )
     );
 
@@ -91,7 +94,7 @@ exports.proses = async (req, res, next) => {
 exports.hasil = async (req, res, next) => {
   try {
     const { id: userId, role } = req.session.user;
-    const riwayat = await Riwayat.findByPk(req.params.id, detailRiwayat);
+    const riwayat = await Riwayat.findByPk(req.params.id, rincianRiwayat);
     const boleh = riwayat && (role !== 'pasien' || riwayat.userId === userId);
     if (!boleh) {
       return res.status(404).render('error', { title: 'Tidak Ditemukan', message: 'Hasil diagnosa tidak ditemukan.' });
@@ -100,7 +103,7 @@ exports.hasil = async (req, res, next) => {
     res.render('diagnosa/hasil', {
       title: 'Hasil Diagnosa',
       riwayat,
-      ...(await dataHasil(riwayat)),
+      ...dataHasil(riwayat),
       kembali,
       tingkatKeyakinan: TINGKAT_KEYAKINAN,
     });

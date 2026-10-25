@@ -112,14 +112,31 @@ const rules = [
   { kode: 'R06', penyakit: 'P06', premis: { G01: 0.6, G04: 0.8, G07: 0.6, G11: 0.6, G18: 0.8, G21: 0.8 } },
   { kode: 'R07', penyakit: 'P07', premis: { G03: 0.4, G05: 0.6, G22: 0.8, G23: 0.8 } },
   { kode: 'R08', penyakit: 'P08', premis: { G01: 0.6, G04: 0.6, G05: 0.4, G25: 1.0 } },
+
+  // Aturan alternatif: satu penyakit dapat disimpulkan dari pola gejala yang berbeda
+  // TBC dengan batuk berdarah, keringat malam, dan berat badan turun
+  { kode: 'R09', penyakit: 'P01', premis: { G01: 0.8, G04: 0.6, G10: 0.8, G11: 0.6 } },
+  // Pneumonia berat: demam tinggi, napas cepat, bibir/ujung jari kebiruan
+  { kode: 'R10', penyakit: 'P02', premis: { G05: 0.6, G09: 0.8, G15: 0.6, G24: 0.8 } },
+  // Asma tanpa batuk: mengi, sesak kambuhan karena pemicu, dada terasa berat
+  { kode: 'R11', penyakit: 'P03', premis: { G06: 0.8, G16: 1.0, G17: 0.6 } },
+  // PPOK lanjut: perokok lama, sesak saat aktivitas, batuk berdahak menahun, kebiruan
+  { kode: 'R12', penyakit: 'P04', premis: { G18: 0.8, G19: 0.8, G20: 0.8, G24: 0.6 } },
+  // Bronkitis akut dengan dahak kuning/hijau
+  { kode: 'R13', penyakit: 'P05', premis: { G02: 0.8, G08: 0.4, G14: 0.6, G17: 0.6 } },
+  // Kanker paru pada perokok dengan suara serak dan penurunan berat badan
+  { kode: 'R14', penyakit: 'P06', premis: { G05: 0.4, G11: 0.6, G12: 0.4, G18: 0.8, G21: 0.8 } },
+  // Efusi pleura: nyeri saat menarik napas, sesak saat berbaring dan beraktivitas
+  { kode: 'R15', penyakit: 'P07', premis: { G07: 0.6, G19: 0.6, G22: 0.8, G23: 0.8 } },
+  // Bronkiektasis: batuk berdahak menahun dengan dahak berbau busuk dan berwarna
+  { kode: 'R16', penyakit: 'P08', premis: { G08: 0.4, G14: 0.6, G20: 0.6, G25: 1.0 } },
 ];
 
 // Akun awal untuk setiap aktor
 const users = [
   { nama: 'Administrator', username: 'admin', password: 'admin123', role: 'admin' },
-  // Dokter ketua memvalidasi usulan basis pengetahuan dari dokter lain
-  { nama: 'dr. Pakar Paru, Sp.P', username: 'dokter', password: 'dokter123', role: 'dokter', ketua: true },
-  { nama: 'dr. Anggota Tim Pakar', username: 'dokter2', password: 'dokter123', role: 'dokter' },
+  // Dokter berperan sebagai pakar yang mengelola basis pengetahuan
+  { nama: 'dr. Pakar Paru, Sp.P', username: 'dokter', password: 'dokter123', role: 'dokter' },
   {
     nama: 'Pasien Contoh',
     username: 'pasien',

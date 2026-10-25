@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lembar Validasi Pakar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>body{margin:0}
+:root {
+  /* Kertas formulir A4: satu tampilan terang yang sengaja dipertahankan di kedua tema */
+  --paper: #ffffff;
+  --ink: #1d232b;
+  --ink-soft: #4a5562;
+  --rule: #9aa5b1;
+  --rule-strong: #2b3540;
+  --fill: #eef2f5;
+  --accent: #1f5f63;
+  --serif: 'Source Serif 4', 'Times New Roman', Times, serif;
+  --sans: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+  color-scheme: light;
+}
+body { background: #d9dee3; color: var(--ink); font-family: var(--serif); font-size: 15px; line-height: 1.5; }
+.wrap { padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.sheet { background: var(--paper); max-width: 210mm; margin: 0 auto; padding: 18mm 16mm; box-sizing: border-box; box-shadow: 0 1px 3px rgba(0,0,0,.18); display: flex; flex-direction: column; gap: 22px; }
+.kop { text-align: center; border-bottom: 3px double var(--rule-strong); padding-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
+.kop .jenis { font-family: var(--sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+h1 { font-size: 22px; line-height: 1.25; margin: 0; text-wrap: balance; }
+.kop .judul-penelitian { font-style: italic; color: var(--ink-soft); text-wrap: balance; }
+h2 { font-family: var(--sans); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; margin: 0; padding: 6px 10px; background: var(--fill); border-left: 4px solid var(--accent); }
+h3 { font-size: 15px; margin: 0; }
+p { margin: 0; }
+.muted { color: var(--ink-soft); }
+section { display: flex; flex-direction: column; gap: 10px; }
+.isian { display: grid; grid-template-columns: minmax(130px, auto) 1fr; gap: 6px 12px; align-items: end; }
+.isian dt { font-family: var(--sans); font-size: 13px; }
+.isian dd { margin: 0; border-bottom: 1px dotted var(--rule-strong); min-height: 22px; }
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { border: 1px solid var(--rule-strong); padding: 5px 7px; vertical-align: top; text-align: left; }
+th { background: var(--fill); font-family: var(--sans); font-size: 12px; font-weight: 600; }
+td.c, th.c { text-align: center; vertical-align: middle; }
+.kode { font-family: var(--sans); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.box { display: inline-block; width: 13px; height: 13px; border: 1.4px solid var(--rule-strong); vertical-align: -2px; }
+.opsi { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--sans); font-size: 13px; }
+.opsi span { display: inline-flex; gap: 6px; align-items: center; }
+.line { border-bottom: 1px dotted var(--rule-strong); height: 24px; }
+.aturan { border: 1px solid var(--rule); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; break-inside: avoid; }
+.aturan .if { font-size: 13.5px; }
+.aturan .if b { font-family: var(--sans); color: var(--accent); }
+.skala td:first-child { font-family: var(--sans); font-weight: 600; text-align: center; width: 70px; }
+ol.petunjuk { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.ttd { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.ttd .blok { display: flex; flex-direction: column; gap: 4px; }
+.ttd .ruang { height: 70px; }
+.ttd .nama { border-bottom: 1px solid var(--rule-strong); min-height: 22px; }
+.catatan-kaki { font-family: var(--sans); font-size: 11.5px; color: var(--ink-soft); border-top: 1px solid var(--rule); padding-top: 8px; }
+@media (max-width: 560px) {
+  .sheet { padding: 20px 14px; }
+  .isian, .ttd { grid-template-columns: 1fr; }
+}
+@media print {
+  @page { size: A4; margin: 15mm 14mm; }
+  body { background: #fff; }
+  .wrap { padding: 0; }
+  .sheet { box-shadow: none; padding: 0; max-width: none; }
+  .pecah { break-before: page; }
+  h2 { break-after: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="wrap"><article class="sheet">
+<header class="kop">
+  <span class="jenis">Instrumen Penelitian</span>
+  <h1>Lembar Validasi Pakar<br>Basis Pengetahuan Sistem Pakar</h1>
+  <p class="judul-penelitian">Sistem Pakar Diagnosa Penyakit Paru-Paru Menggunakan Metode Forward Chaining dan Certainty Factor</p>
+</header>
+<section>
+  <h2>Identitas Peneliti</h2>
+  <dl class="isian">
+    <dt>Nama</dt><dd>Lerdy Fernando Simanulang</dd>
+    <dt>NIM</dt><dd></dd>
+    <dt>Program Studi</dt><dd></dd>
+    <dt>Perguruan Tinggi</dt><dd></dd>
+  </dl>
+</section>
+<section>
+  <h2>Identitas Pakar</h2>
+  <dl class="isian">
+    <dt>Nama lengkap &amp; gelar</dt><dd></dd>
+    <dt>Spesialisasi</dt><dd></dd>
+    <dt>NIP / No. SIP</dt><dd></dd>
+    <dt>Instansi</dt><dd></dd>
+    <dt>Lama praktik</dt><dd></dd>
+    <dt>Tanggal pengisian</dt><dd></dd>
+  </dl>
+</section>
+<section>
+  <h2>Petunjuk Pengisian</h2>
+  <ol class="petunjuk">
+    <li>Lembar ini berisi data penyakit, gejala, dan aturan (kaidah produksi) yang akan digunakan sistem pakar. Data disusun peneliti dan memerlukan penilaian Bapak/Ibu sebagai pakar.</li>
+    <li>Beri tanda centang (&#10003;) pada kotak yang sesuai. Tuliskan perbaikan atau tambahan pada kolom catatan.</li>
+    <li>Pada Bagian C, berikan <strong>nilai CF pakar</strong> untuk setiap gejala pada setiap aturan, yaitu seberapa kuat gejala tersebut mendukung penyakit yang disimpulkan. Gunakan skala di bawah ini.</li>
+    <li>Coret gejala yang menurut Bapak/Ibu tidak relevan pada suatu aturan, dan tuliskan gejala lain yang perlu ditambahkan.</li>
+  </ol>
+  <div class="tbl"><table class="skala" style="max-width: 420px">
+    <thead><tr><th class="c">Nilai CF</th><th>Keterangan</th></tr></thead>
+    <tbody><tr><td>1,0</td><td>Pasti</td></tr><tr><td>0,8</td><td>Hampir pasti</td></tr><tr><td>0,6</td><td>Kemungkinan besar</td></tr><tr><td>0,4</td><td>Mungkin</td></tr><tr><td>0,2</td><td>Tidak tahu</td></tr></tbody>
+  </table></div>
+</section>
+<section class="pecah">
+  <h2>Bagian A &middot; Validasi Data Penyakit</h2>
+  <p class="muted">Apakah penyakit berikut tepat dimasukkan ke dalam sistem pakar diagnosa penyakit paru-paru?</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Nama penyakit</th><th class="c" style="width: 64px">Sesuai</th><th class="c" style="width: 64px">Tidak sesuai</th><th style="width: 34%">Catatan / perbaikan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">P01</td><td>Tuberkulosis (TBC) Paru</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P02</td><td>Pneumonia</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P03</td><td>Asma</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P04</td><td>Penyakit Paru Obstruktif Kronis (PPOK)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P05</td><td>Bronkitis Akut</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P06</td><td>Kanker Paru</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P07</td><td>Efusi Pleura</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P08</td><td>Bronkiektasis</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">P..</td><td><span class="muted">(penyakit tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr><tr><td class="c kode">P..</td><td><span class="muted">(penyakit tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+<section>
+  <h2>Bagian B &middot; Validasi Data Gejala</h2>
+  <p class="muted">Apakah gejala berikut tepat digunakan dan rumusannya mudah dipahami pasien?</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 64px">Sesuai</th><th class="c" style="width: 64px">Tidak sesuai</th><th style="width: 34%">Catatan / perbaikan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G01</td><td>Batuk lebih dari 2 minggu</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G02</td><td>Batuk berdahak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G03</td><td>Batuk kering (tidak berdahak)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G04</td><td>Batuk berdarah</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G06</td><td>Napas berbunyi (mengi)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G07</td><td>Nyeri dada</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G08</td><td>Demam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G09</td><td>Demam tinggi disertai menggigil</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G10</td><td>Berkeringat di malam hari tanpa aktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G11</td><td>Berat badan turun tanpa sebab yang jelas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G12</td><td>Nafsu makan menurun</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G13</td><td>Badan lemas / mudah lelah</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G14</td><td>Dahak kental berwarna kuning atau hijau</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G15</td><td>Napas cepat dan dangkal</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G16</td><td>Sesak napas kambuhan dipicu debu, udara dingin, atau alergen</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G17</td><td>Dada terasa berat atau tertekan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G18</td><td>Riwayat merokok jangka panjang</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G19</td><td>Sesak napas bertambah saat beraktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G20</td><td>Batuk berdahak menahun (hampir setiap hari)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G21</td><td>Suara serak yang tidak kunjung sembuh</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G22</td><td>Nyeri dada bertambah saat menarik napas dalam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G23</td><td>Sesak napas saat berbaring</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G24</td><td>Bibir atau ujung jari kebiruan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G25</td><td>Dahak berbau busuk dalam jumlah banyak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr><tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr><tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+<section class="pecah">
+  <h2>Bagian C &middot; Validasi Aturan dan Nilai CF Pakar</h2>
+  <p class="muted">Setiap aturan berbentuk <em>IF gejala AND gejala ... THEN penyakit</em>. Satu penyakit dapat memiliki lebih dari satu aturan untuk pola gejala yang berbeda. Centang satu nilai CF pada setiap baris gejala.</p>
+</section>
+<div class="aturan">
+  <h3><span class="kode">R01</span> &middot; Tuberkulosis (TBC) Paru (P01)</h3>
+  <p class="if"><b>IF</b> G01 <b>AND</b> G02 <b>AND</b> G08 <b>AND</b> G10 <b>AND</b> G11 <b>AND</b> G12 <b>THEN</b> P01</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G01</td><td>Batuk lebih dari 2 minggu</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G02</td><td>Batuk berdahak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G08</td><td>Demam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G10</td><td>Berkeringat di malam hari tanpa aktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G11</td><td>Berat badan turun tanpa sebab yang jelas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G12</td><td>Nafsu makan menurun</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R02</span> &middot; Pneumonia (P02)</h3>
+  <p class="if"><b>IF</b> G02 <b>AND</b> G05 <b>AND</b> G07 <b>AND</b> G09 <b>AND</b> G14 <b>AND</b> G15 <b>THEN</b> P02</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G02</td><td>Batuk berdahak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G07</td><td>Nyeri dada</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G09</td><td>Demam tinggi disertai menggigil</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G14</td><td>Dahak kental berwarna kuning atau hijau</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G15</td><td>Napas cepat dan dangkal</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R03</span> &middot; Asma (P03)</h3>
+  <p class="if"><b>IF</b> G03 <b>AND</b> G05 <b>AND</b> G06 <b>AND</b> G16 <b>AND</b> G17 <b>THEN</b> P03</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G03</td><td>Batuk kering (tidak berdahak)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G06</td><td>Napas berbunyi (mengi)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G16</td><td>Sesak napas kambuhan dipicu debu, udara dingin, atau alergen</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G17</td><td>Dada terasa berat atau tertekan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R04</span> &middot; Penyakit Paru Obstruktif Kronis (PPOK) (P04)</h3>
+  <p class="if"><b>IF</b> G05 <b>AND</b> G06 <b>AND</b> G18 <b>AND</b> G19 <b>AND</b> G20 <b>THEN</b> P04</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G06</td><td>Napas berbunyi (mengi)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G18</td><td>Riwayat merokok jangka panjang</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G19</td><td>Sesak napas bertambah saat beraktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G20</td><td>Batuk berdahak menahun (hampir setiap hari)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R05</span> &middot; Bronkitis Akut (P05)</h3>
+  <p class="if"><b>IF</b> G02 <b>AND</b> G08 <b>AND</b> G13 <b>AND</b> G17 <b>THEN</b> P05</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G02</td><td>Batuk berdahak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G08</td><td>Demam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G13</td><td>Badan lemas / mudah lelah</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G17</td><td>Dada terasa berat atau tertekan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R06</span> &middot; Kanker Paru (P06)</h3>
+  <p class="if"><b>IF</b> G01 <b>AND</b> G04 <b>AND</b> G07 <b>AND</b> G11 <b>AND</b> G18 <b>AND</b> G21 <b>THEN</b> P06</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G01</td><td>Batuk lebih dari 2 minggu</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G04</td><td>Batuk berdarah</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G07</td><td>Nyeri dada</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G11</td><td>Berat badan turun tanpa sebab yang jelas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G18</td><td>Riwayat merokok jangka panjang</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G21</td><td>Suara serak yang tidak kunjung sembuh</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R07</span> &middot; Efusi Pleura (P07)</h3>
+  <p class="if"><b>IF</b> G03 <b>AND</b> G05 <b>AND</b> G22 <b>AND</b> G23 <b>THEN</b> P07</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G03</td><td>Batuk kering (tidak berdahak)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G22</td><td>Nyeri dada bertambah saat menarik napas dalam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G23</td><td>Sesak napas saat berbaring</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R08</span> &middot; Bronkiektasis (P08)</h3>
+  <p class="if"><b>IF</b> G01 <b>AND</b> G04 <b>AND</b> G05 <b>AND</b> G25 <b>THEN</b> P08</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G01</td><td>Batuk lebih dari 2 minggu</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G04</td><td>Batuk berdarah</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G25</td><td>Dahak berbau busuk dalam jumlah banyak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R09</span> &middot; Tuberkulosis (TBC) Paru (P01)</h3>
+  <p class="if"><b>IF</b> G01 <b>AND</b> G04 <b>AND</b> G10 <b>AND</b> G11 <b>THEN</b> P01</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G01</td><td>Batuk lebih dari 2 minggu</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G04</td><td>Batuk berdarah</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G10</td><td>Berkeringat di malam hari tanpa aktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G11</td><td>Berat badan turun tanpa sebab yang jelas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R10</span> &middot; Pneumonia (P02)</h3>
+  <p class="if"><b>IF</b> G05 <b>AND</b> G09 <b>AND</b> G15 <b>AND</b> G24 <b>THEN</b> P02</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G09</td><td>Demam tinggi disertai menggigil</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G15</td><td>Napas cepat dan dangkal</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G24</td><td>Bibir atau ujung jari kebiruan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R11</span> &middot; Asma (P03)</h3>
+  <p class="if"><b>IF</b> G06 <b>AND</b> G16 <b>AND</b> G17 <b>THEN</b> P03</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G06</td><td>Napas berbunyi (mengi)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G16</td><td>Sesak napas kambuhan dipicu debu, udara dingin, atau alergen</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G17</td><td>Dada terasa berat atau tertekan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R12</span> &middot; Penyakit Paru Obstruktif Kronis (PPOK) (P04)</h3>
+  <p class="if"><b>IF</b> G18 <b>AND</b> G19 <b>AND</b> G20 <b>AND</b> G24 <b>THEN</b> P04</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G18</td><td>Riwayat merokok jangka panjang</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G19</td><td>Sesak napas bertambah saat beraktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G20</td><td>Batuk berdahak menahun (hampir setiap hari)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G24</td><td>Bibir atau ujung jari kebiruan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R13</span> &middot; Bronkitis Akut (P05)</h3>
+  <p class="if"><b>IF</b> G02 <b>AND</b> G08 <b>AND</b> G14 <b>AND</b> G17 <b>THEN</b> P05</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G02</td><td>Batuk berdahak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G08</td><td>Demam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G14</td><td>Dahak kental berwarna kuning atau hijau</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G17</td><td>Dada terasa berat atau tertekan</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R14</span> &middot; Kanker Paru (P06)</h3>
+  <p class="if"><b>IF</b> G05 <b>AND</b> G11 <b>AND</b> G12 <b>AND</b> G18 <b>AND</b> G21 <b>THEN</b> P06</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G05</td><td>Sesak napas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G11</td><td>Berat badan turun tanpa sebab yang jelas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G12</td><td>Nafsu makan menurun</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G18</td><td>Riwayat merokok jangka panjang</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G21</td><td>Suara serak yang tidak kunjung sembuh</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R15</span> &middot; Efusi Pleura (P07)</h3>
+  <p class="if"><b>IF</b> G07 <b>AND</b> G19 <b>AND</b> G22 <b>AND</b> G23 <b>THEN</b> P07</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G07</td><td>Nyeri dada</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G19</td><td>Sesak napas bertambah saat beraktivitas</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G22</td><td>Nyeri dada bertambah saat menarik napas dalam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G23</td><td>Sesak napas saat berbaring</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<div class="aturan">
+  <h3><span class="kode">R16</span> &middot; Bronkiektasis (P08)</h3>
+  <p class="if"><b>IF</b> G08 <b>AND</b> G14 <b>AND</b> G20 <b>AND</b> G25 <b>THEN</b> P08</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 48px">Kode</th><th>Gejala</th><th class="c" style="width: 44px">1,0</th><th class="c" style="width: 44px">0,8</th><th class="c" style="width: 44px">0,6</th><th class="c" style="width: 44px">0,4</th><th class="c" style="width: 44px">0,2</th><th class="c" style="width: 64px">Tidak relevan</th></tr></thead>
+    <tbody>
+      <tr><td class="c kode">G08</td><td>Demam</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G14</td><td>Dahak kental berwarna kuning atau hijau</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G20</td><td>Batuk berdahak menahun (hampir setiap hari)</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G25</td><td>Dahak berbau busuk dalam jumlah banyak</td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr>
+      <tr><td class="c kode">G..</td><td><span class="muted">(gejala tambahan)</span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"></td></tr>
+    </tbody>
+  </table></div>
+  <div class="opsi"><span><span class="box" aria-hidden="true"></span> Aturan sesuai</span><span><span class="box" aria-hidden="true"></span> Sesuai dengan perbaikan</span><span><span class="box" aria-hidden="true"></span> Tidak sesuai</span></div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Catatan:</span><div class="line"></div></div>
+</div>
+<section class="pecah">
+  <h2>Bagian D &middot; Aturan Tambahan dari Pakar</h2>
+  <p class="muted">Tuliskan pola gejala lain yang menurut Bapak/Ibu perlu ditambahkan sebagai aturan, beserta nilai CF pakar tiap gejala (contoh: G01 (0,8), G04 (0,6)).</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 40px">No</th><th style="width: 30%">Penyakit (THEN)</th><th>Gejala (IF) beserta nilai CF</th></tr></thead>
+    <tbody><tr><td class="c">1</td><td style="height: 46px"></td><td></td></tr><tr><td class="c">2</td><td style="height: 46px"></td><td></td></tr><tr><td class="c">3</td><td style="height: 46px"></td><td></td></tr><tr><td class="c">4</td><td style="height: 46px"></td><td></td></tr><tr><td class="c">5</td><td style="height: 46px"></td><td></td></tr></tbody>
+  </table></div>
+</section>
+<section>
+  <h2>Bagian E &middot; Pengujian Kesesuaian Hasil Sistem</h2>
+  <p class="muted">Diisi saat pengujian: peneliti memasukkan gejala kasus ke sistem, lalu pakar membandingkan hasil sistem dengan diagnosis pakar. Hasilnya dipakai untuk menghitung akurasi sistem.</p>
+  <div class="tbl"><table>
+    <thead><tr><th class="c" style="width: 40px">No</th><th>Gejala yang dialami (kode)</th><th style="width: 22%">Hasil sistem (penyakit &amp; CF)</th><th style="width: 20%">Diagnosis pakar</th><th class="c" style="width: 56px">Sesuai</th><th class="c" style="width: 56px">Tidak</th></tr></thead>
+    <tbody><tr><td class="c">1</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">2</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">3</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">4</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">5</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">6</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">7</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">8</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">9</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr><tr><td class="c">10</td><td style="height: 34px"></td><td></td><td></td><td class="c"><span class="box" aria-hidden="true"></span></td><td class="c"><span class="box" aria-hidden="true"></span></td></tr></tbody>
+  </table></div>
+  <p class="muted" style="font-family: var(--sans); font-size: 12.5px">Akurasi = (jumlah kasus sesuai &divide; jumlah seluruh kasus) &times; 100% = ........ %</p>
+</section>
+<section>
+  <h2>Bagian F &middot; Kesimpulan Pakar</h2>
+  <p>Berdasarkan penilaian di atas, basis pengetahuan sistem pakar ini dinyatakan:</p>
+  <div class="opsi" style="flex-direction: column; gap: 8px; font-size: 14px">
+    <span><span class="box" aria-hidden="true"></span> Layak digunakan tanpa revisi</span>
+    <span><span class="box" aria-hidden="true"></span> Layak digunakan dengan revisi sesuai catatan</span>
+    <span><span class="box" aria-hidden="true"></span> Belum layak digunakan</span>
+  </div>
+  <div><span class="muted" style="font-family: var(--sans); font-size: 12.5px">Saran dan masukan:</span><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+</section>
+<section class="ttd">
+  <div class="blok"></div>
+  <div class="blok">
+    <span>................................, ........................ 20....</span>
+    <span>Pakar,</span>
+    <div class="ruang"></div>
+    <div class="nama"></div>
+    <span class="muted" style="font-family: var(--sans); font-size: 12.5px">NIP / No. SIP: ..............................</span>
+  </div>
+</section>
+<p class="catatan-kaki">Data penyakit, gejala, dan aturan pada lembar ini adalah rancangan awal peneliti dan belum merupakan pengetahuan pakar. Nilai CF yang digunakan sistem diambil dari isian pakar pada Bagian C dan D.</p>
+</article></div>
+</body>
+</html>

@@ -78,8 +78,11 @@ function cfKesimpulan(jejak, rules, cfUser) {
  * (tidak harus semua premis terpenuhi), lalu diurutkan dari CF tertinggi.
  * Nilai CF kesimpulan hasil forward chaining ikut dipakai sebagai fakta
  * untuk aturan berantai. Jika satu penyakit punya beberapa aturan, diambil
- * aturan dengan CF tertinggi.
+ * aturan dengan CF tertinggi (bila sama: aturan yang lengkap, lalu rasio gejala cocok terbesar).
  */
+// Urutan prioritas: CF tertinggi, lalu aturan yang lengkap, lalu rasio gejala cocok terbesar
+const bandingkan = (a, b) => b.cf - a.cf || b.lengkap - a.lengkap || b.cocok / b.total - a.cocok / a.total;
+
 function rankingPenyakit(rules, cfUser, jejak = []) {
   const cfFakta = { ...cfUser };
   for (const [kode, { cf }] of Object.entries(cfKesimpulan(jejak, rules, cfUser))) cfFakta[kode] = cf;
@@ -99,13 +102,11 @@ function rankingPenyakit(rules, cfUser, jejak = []) {
       total: rule.premis.length,
       lengkap: terpenuhi.has(rule.kode),
     };
-    if (!terbaik[rule.konklusi] || cf > terbaik[rule.konklusi].cf) terbaik[rule.konklusi] = kandidat;
+    const lama = terbaik[rule.konklusi];
+    if (!lama || bandingkan(kandidat, lama) < 0) terbaik[rule.konklusi] = kandidat;
   }
 
-  // CF sama: dahulukan aturan yang lengkap, lalu rasio gejala cocok terbesar
-  return Object.values(terbaik).sort(
-    (a, b) => b.cf - a.cf || b.lengkap - a.lengkap || b.cocok / b.total - a.cocok / a.total
-  );
+  return Object.values(terbaik).sort(bandingkan);
 }
 
 function interpretasi(cf) {

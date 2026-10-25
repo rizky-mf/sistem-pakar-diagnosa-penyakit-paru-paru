@@ -78,6 +78,21 @@ test('CF sama diurutkan berdasarkan rasio gejala cocok', () => {
   assert.deepStrictEqual(ranking.map((r) => r.konklusi), ['PB', 'PA']);
 });
 
+test('beberapa aturan satu penyakit dengan CF sama: aturan yang tertembak penuh yang dipakai', () => {
+  // R3 (lebih dulu) hanya cocok sebagian, R4 tertembak penuh; CF keduanya sama
+  const rulesSatuPenyakit = [
+    { kode: 'R3', premis: ['G01', 'G02', 'G03'], konklusi: 'PA' },
+    { kode: 'R4', premis: ['G01', 'G02'], konklusi: 'PA' },
+  ];
+  const cfUser = { G01: 0.8, G02: 0.6 };
+  const fc = forwardChaining(Object.keys(cfUser), rulesSatuPenyakit);
+  const ranking = rankingPenyakit(rulesSatuPenyakit, cfUser, fc.jejak);
+  assert.strictEqual(ranking.length, 1);
+  assert.strictEqual(ranking[0].rule, 'R4');
+  assert.strictEqual(ranking[0].lengkap, true);
+  assert.strictEqual(ranking[0].cocok, ranking[0].total);
+});
+
 test('interpretasi nilai CF', () => {
   assert.strictEqual(interpretasi(0.9), 'Hampir pasti');
   assert.strictEqual(interpretasi(0.45), 'Kemungkinan');

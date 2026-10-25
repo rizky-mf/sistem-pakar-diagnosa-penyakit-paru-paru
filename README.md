@@ -28,18 +28,16 @@ Akun bawaan (ganti password setelah login pertama):
 | Role | Username | Password |
 |---|---|---|
 | Admin | `admin` | `admin123` |
-| Dokter (ketua) | `dokter` | `dokter123` |
-| Dokter (anggota) | `dokter2` | `dokter123` |
+| Dokter (pakar) | `dokter` | `dokter123` |
 | Pasien | `pasien` | `pasien123` |
 
 ## Aktor dan Hak Akses
 
 | Aktor | Hak akses |
 |---|---|
-| **Admin** | Kelola akun admin/dokter, lihat daftar pasien, lihat & hapus riwayat diagnosa |
-| **Dokter ketua** | Kelola basis pengetahuan secara langsung, memvalidasi (setujui/tolak) usulan dari dokter lain, lihat riwayat diagnosa pasien |
-| **Dokter anggota** | Mengusulkan tambahan/perubahan penyakit, gejala, dan aturan + CF pakar (menunggu validasi ketua), lihat riwayat diagnosa pasien |
-| **Pasien** | Daftar akun, login, edit profil, melakukan diagnosa, melihat & mencetak hasil, melihat riwayat diagnosanya sendiri |
+| **Admin** | Kelola akun admin, dokter, dan pasien (akun pasien mendapat ID otomatis dan kata sandi awal acak), reset kata sandi pasien, lihat & hapus riwayat diagnosa |
+| **Dokter (pakar)** | Kelola basis pengetahuan secara langsung (penyakit, gejala, aturan + CF pakar), lihat riwayat diagnosa pasien |
+| **Pasien** | Daftar akun, login dengan username atau ID pasien, edit profil, melakukan diagnosa, melihat & mencetak hasil, melihat riwayat diagnosanya sendiri |
 
 Tidak ada beranda publik: pengunjung yang belum login langsung diarahkan ke halaman login.
 
@@ -72,14 +70,13 @@ tests/                      # unit test mesin inferensi (npm test)
 | `gejala` | id, kode, nama |
 | `rule` | id, kode, penyakit_id |
 | `rule_gejala` | rule_id, gejala_id, cf (premis aturan + CF pakar) |
-| `user` | id, nama, username, password, role (admin/dokter/pasien), jenis_kelamin, tanggal_lahir, ketua |
-| `usulan_penyakit` | id, penyakit_id (NULL = usulan baru), kode, nama, deskripsi, solusi, status, catatan, diajukan_oleh, divalidasi_oleh, tanggal_validasi |
-| `usulan_gejala` | id, gejala_id (NULL = usulan baru), kode, nama, status, catatan, diajukan_oleh, divalidasi_oleh, tanggal_validasi |
-| `usulan_rule` | id, rule_id (NULL = usulan baru), kode, penyakit_id, status, catatan, diajukan_oleh, divalidasi_oleh, tanggal_validasi |
-| `usulan_rule_gejala` | usulan_rule_id, gejala_id, cf (premis aturan yang diusulkan) |
-| `riwayat` | id, user_id, tanggal_diagnosa (waktu hasil diagnosa keluar) |
+| `user` | id, nama, username, password, role (admin/dokter/pasien), kode_pasien (ID pasien, unik), jenis_kelamin, tanggal_lahir, wajib_ganti_password |
+| `riwayat` | id, user_id, tanggal_diagnosa (waktu hasil diagnosa keluar), jumlah_iterasi |
 | `riwayat_gejala` | id, riwayat_id, gejala_id, cf_user (gejala yang dirasakan pasien) |
-| `riwayat_penyakit` | id, riwayat_id, penyakit_id, cf (hasil diagnosa; CF tertinggi = hasil utama) |
+| `riwayat_penyakit` | id, riwayat_id, penyakit_id, cf, rule_kode, gejala_cocok, gejala_total (CF tertinggi = hasil utama) |
+| `riwayat_langkah` | id, riwayat_penyakit_id, urutan, kode_fakta, cf_pakar, cf_user, cf_gejala, cf_kombinasi |
+| `riwayat_jejak` | id, riwayat_id, urutan, iterasi, rule_kode, konklusi_kode (jejak forward chaining) |
+| `riwayat_jejak_premis` | id, riwayat_jejak_id, urutan, kode_fakta |
 
 Relasi:
 
@@ -88,19 +85,8 @@ Relasi:
 - Menghapus akun pasien atau riwayat ikut menghapus detailnya (`CASCADE`). Gejala/penyakit
   yang sudah dipakai pada riwayat tidak dapat dihapus (`RESTRICT`).
 - Data pasien (nama, umur saat diagnosa, jenis kelamin) diambil dari tabel `user`. Jejak
-  forward chaining dan langkah perhitungan CF dihitung ulang saat halaman hasil dibuka.
-
-## Validasi Basis Pengetahuan oleh Dokter Ketua
-
-1. Admin menandai satu akun dokter sebagai **ketua** (Kelola Akun → Edit → "Jadikan dokter ketua").
-2. Dokter anggota yang menambah atau mengubah penyakit, gejala, atau aturan tidak mengubah data
-   secara langsung; isiannya disimpan sebagai **usulan** berstatus *menunggu*.
-3. Data yang dipakai diagnosa tetap versi yang sudah disetujui (untuk perubahan, versi lama tetap
-   dipakai) sampai ketua menyetujui usulan di menu **Validasi Usulan**.
-4. Ketua dapat **menyetujui** (isi usulan diterapkan ke tabel utama) atau **menolak** dengan catatan.
-   Pengusul dapat memperbaiki usulan yang ditolak lalu mengirim ulang.
-5. Tambahan/perubahan oleh ketua langsung berlaku. Data yang sudah disetujui hanya dapat dihapus
-   ketua; dokter anggota hanya dapat menghapus usulannya yang belum disetujui.
+  forward chaining dan langkah perhitungan CF disimpan saat diagnosa, sehingga hasil lama
+  tidak berubah walaupun aturan diubah kemudian.
 
 ## Cara Kerja Forward Chaining
 

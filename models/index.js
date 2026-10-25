@@ -2,6 +2,15 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const { interpretasi } = require('../services/certaintyFactor');
 
+// Nilai certainty factor 0-1 disimpan sebagai DECIMAL (nilai pasti, bukan perkiraan
+// seperti FLOAT). Batas 0-1 juga dijaga di database lewat CHECK (models/constraints.js).
+const kolomCF = (opsi = {}) => ({
+  type: DataTypes.DECIMAL(5, 4),
+  allowNull: false,
+  validate: { min: 0, max: 1 },
+  ...opsi,
+});
+
 const Penyakit = sequelize.define('penyakit', {
   kode: { type: DataTypes.STRING(10), allowNull: false, unique: true },
   nama: { type: DataTypes.STRING(100), allowNull: false },
@@ -21,7 +30,7 @@ const Rule = sequelize.define('rule', {
 
 // Premis aturan beserta CF pakar (bobot keyakinan gejala terhadap penyakit, 0-1)
 const RuleGejala = sequelize.define('rule_gejala', {
-  cf: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 1, validate: { min: 0, max: 1 } },
+  cf: kolomCF({ defaultValue: 1 }),
 });
 
 // Aktor: admin (kelola akun & sistem), dokter (pakar, kelola basis pengetahuan), pasien (diagnosa)
@@ -31,50 +40,12 @@ const User = sequelize.define('user', {
   password: { type: DataTypes.STRING(255), allowNull: false },
   role: { type: DataTypes.ENUM('admin', 'dokter', 'pasien'), allowNull: false, defaultValue: 'pasien' },
   // Khusus pasien
+  // ID pasien otomatis (PSN + tahun + nomor urut, misalnya PSN20260001), bisa dipakai untuk login; tidak dapat diubah
+  kodePasien: { type: DataTypes.STRING(20), allowNull: true, unique: true },
   jenisKelamin: { type: DataTypes.ENUM('L', 'P'), allowNull: true },
   tanggalLahir: { type: DataTypes.DATEONLY, allowNull: true },
-  // Khusus dokter: ketua memvalidasi usulan basis pengetahuan dari dokter lain
-  ketua: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
-});
-
-// ===== Usulan basis pengetahuan =====
-// Tambahan/perubahan dari dokter (bukan ketua) disimpan sebagai usulan. Data di tabel
-// penyakit, gejala, dan rule tetap versi yang sudah disetujui sampai usulan divalidasi ketua.
-const kolomValidasi = {
-  status: { type: DataTypes.ENUM('menunggu', 'disetujui', 'ditolak'), allowNull: false, defaultValue: 'menunggu' },
-  catatan: { type: DataTypes.TEXT, allowNull: true }, // alasan dari ketua
-  tanggalValidasi: { type: DataTypes.DATE, allowNull: true },
-};
-
-const UsulanPenyakit = sequelize.define('usulan_penyakit', {
-  kode: { type: DataTypes.STRING(10), allowNull: false },
-  nama: { type: DataTypes.STRING(100), allowNull: false },
-  deskripsi: { type: DataTypes.TEXT, allowNull: false },
-  solusi: { type: DataTypes.TEXT, allowNull: false },
-  ...kolomValidasi,
-});
-
-const UsulanGejala = sequelize.define('usulan_gejala', {
-  kode: { type: DataTypes.STRING(10), allowNull: false },
-  nama: { type: DataTypes.STRING(255), allowNull: false },
-  ...kolomValidasi,
-});
-
-const UsulanRule = sequelize.define('usulan_rule', {
-  kode: { type: DataTypes.STRING(10), allowNull: false },
-  ...kolomValidasi,
-});
-
-// Gejala yang diusulkan bersama penyakit baru (menjadi aturan saat disetujui).
-// gejala_id terisi = gejala yang sudah ada; kosong = gejala baru dengan nama yang diusulkan.
-const UsulanPenyakitGejala = sequelize.define('usulan_penyakit_gejala', {
-  nama: { type: DataTypes.STRING(255), allowNull: true },
-  cf: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 1, validate: { min: 0, max: 1 } },
-});
-
-// Premis aturan yang diusulkan beserta CF pakar
-const UsulanRuleGejala = sequelize.define('usulan_rule_gejala', {
-  cf: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 1, validate: { min: 0, max: 1 } },
+  // True untuk akun yang kata sandinya dibuat/di-reset admin: wajib diganti saat login berikutnya
+  wajibGantiPassword: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 });
 
 // Umur dihitung dari tanggal lahir
@@ -92,6 +63,8 @@ function hitungUmur(tanggalLahir, pada = new Date()) {
 const Riwayat = sequelize.define('riwayat', {
   // Waktu hasil diagnosa keluar setelah proses inferensi selesai
   tanggalDiagnosa: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+  // Banyaknya iterasi forward chaining hingga tidak ada fakta baru
+  jumlahIterasi: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
   // Data pasien diambil dari relasi user (harus ikut dimuat lewat include)
   nama: {
     type: DataTypes.VIRTUAL,
@@ -103,6 +76,12 @@ const Riwayat = sequelize.define('riwayat', {
     type: DataTypes.VIRTUAL,
     get() {
       return this.user ? this.user.jenisKelamin : null;
+    },
+  },
+  kodePasien: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.user ? this.user.kodePasien : null;
     },
   },
   // Umur pasien pada saat diagnosa
@@ -129,7 +108,7 @@ const Riwayat = sequelize.define('riwayat', {
 
 // Detail gejala yang dirasakan pasien beserta tingkat keyakinannya (CF user)
 const RiwayatGejala = sequelize.define('riwayat_gejala', {
-  cfUser: { type: DataTypes.FLOAT, allowNull: false },
+  cfUser: kolomCF(),
   kode: {
     type: DataTypes.VIRTUAL,
     get() {
@@ -142,11 +121,19 @@ const RiwayatGejala = sequelize.define('riwayat_gejala', {
       return this.gejala ? this.gejala.nama : '';
     },
   },
+}, {
+  // Satu gejala hanya boleh tercatat sekali dalam satu riwayat
+  indexes: [{ name: 'riwayat_gejala_unik', unique: true, fields: ['riwayat_id', 'gejala_id'] }],
 });
 
-// Hasil diagnosa: nilai CF setiap penyakit
+// Hasil diagnosa: nilai CF setiap penyakit beserta aturan yang menghasilkannya.
+// Disimpan saat diagnosa (snapshot) sehingga tidak berubah bila basis aturan diubah.
 const RiwayatPenyakit = sequelize.define('riwayat_penyakit', {
-  cf: { type: DataTypes.FLOAT, allowNull: false },
+  cf: kolomCF(),
+  // Kosong hanya untuk riwayat lama yang aturannya sudah tidak ada saat migrasi
+  ruleKode: { type: DataTypes.STRING(10), allowNull: true },
+  gejalaCocok: { type: DataTypes.INTEGER, allowNull: true },
+  gejalaTotal: { type: DataTypes.INTEGER, allowNull: true },
   ...Object.fromEntries(
     ['kode', 'nama', 'deskripsi', 'solusi'].map((f) => [
       f,
@@ -170,6 +157,40 @@ const RiwayatPenyakit = sequelize.define('riwayat_penyakit', {
       return interpretasi(this.getDataValue('cf'));
     },
   },
+}, {
+  // Satu penyakit hanya boleh muncul sekali dalam satu riwayat
+  indexes: [{ name: 'riwayat_penyakit_unik', unique: true, fields: ['riwayat_id', 'penyakit_id'] }],
+});
+
+// Langkah perhitungan certainty factor satu penyakit pada saat diagnosa.
+// kodeFakta berupa kode gejala, atau kode penyakit bila hasil aturan berantai.
+const RiwayatLangkah = sequelize.define('riwayat_langkah', {
+  urutan: { type: DataTypes.INTEGER, allowNull: false },
+  kodeFakta: { type: DataTypes.STRING(10), allowNull: false },
+  cfPakar: kolomCF(),
+  cfUser: kolomCF(),
+  cfGejala: kolomCF(),
+  cfKombinasi: kolomCF(),
+}, {
+  indexes: [{ name: 'riwayat_langkah_unik', unique: true, fields: ['riwayat_penyakit_id', 'urutan'] }],
+});
+
+// Jejak penalaran forward chaining: aturan yang terpenuhi pada saat diagnosa
+const RiwayatJejak = sequelize.define('riwayat_jejak', {
+  urutan: { type: DataTypes.INTEGER, allowNull: false },
+  iterasi: { type: DataTypes.INTEGER, allowNull: false },
+  ruleKode: { type: DataTypes.STRING(10), allowNull: false },
+  konklusiKode: { type: DataTypes.STRING(10), allowNull: false },
+}, {
+  indexes: [{ name: 'riwayat_jejak_unik', unique: true, fields: ['riwayat_id', 'urutan'] }],
+});
+
+// Premis (IF) dari setiap aturan pada jejak penalaran
+const RiwayatJejakPremis = sequelize.define('riwayat_jejak_premis', {
+  urutan: { type: DataTypes.INTEGER, allowNull: false },
+  kodeFakta: { type: DataTypes.STRING(10), allowNull: false },
+}, {
+  indexes: [{ name: 'riwayat_jejak_premis_unik', unique: true, fields: ['riwayat_jejak_id', 'urutan'] }],
 });
 
 // Relasi
@@ -178,34 +199,6 @@ Rule.belongsTo(Penyakit, { foreignKey: 'penyakitId' });
 
 Rule.belongsToMany(Gejala, { through: RuleGejala, foreignKey: 'ruleId', otherKey: 'gejalaId' });
 Gejala.belongsToMany(Rule, { through: RuleGejala, foreignKey: 'gejalaId', otherKey: 'ruleId' });
-
-// Usulan: target kosong (NULL) berarti usulan data baru, terisi berarti usulan perubahan.
-// Jika data target dihapus, usulannya ikut terhapus.
-Penyakit.hasMany(UsulanPenyakit, { foreignKey: 'penyakitId', onDelete: 'CASCADE' });
-UsulanPenyakit.belongsTo(Penyakit, { foreignKey: 'penyakitId', as: 'target' });
-Gejala.hasMany(UsulanGejala, { foreignKey: 'gejalaId', onDelete: 'CASCADE' });
-UsulanGejala.belongsTo(Gejala, { foreignKey: 'gejalaId', as: 'target' });
-Rule.hasMany(UsulanRule, { foreignKey: 'ruleId', onDelete: 'CASCADE' });
-UsulanRule.belongsTo(Rule, { foreignKey: 'ruleId', as: 'target' });
-
-UsulanPenyakit.hasMany(UsulanPenyakitGejala, { as: 'daftarGejala', foreignKey: { name: 'usulanPenyakitId', allowNull: false }, onDelete: 'CASCADE' });
-UsulanPenyakitGejala.belongsTo(UsulanPenyakit, { foreignKey: { name: 'usulanPenyakitId', allowNull: false } });
-Gejala.hasMany(UsulanPenyakitGejala, { foreignKey: 'gejalaId', onDelete: 'CASCADE' });
-UsulanPenyakitGejala.belongsTo(Gejala, { foreignKey: 'gejalaId' });
-
-// Penyakit (THEN) dan gejala (IF) pada usulan aturan harus data yang sudah disetujui
-Penyakit.hasMany(UsulanRule, { foreignKey: { name: 'penyakitId', allowNull: false }, as: 'usulanRuleThen', onDelete: 'CASCADE' });
-UsulanRule.belongsTo(Penyakit, { foreignKey: { name: 'penyakitId', allowNull: false } });
-UsulanRule.belongsToMany(Gejala, { through: UsulanRuleGejala, foreignKey: 'usulanRuleId', otherKey: 'gejalaId' });
-Gejala.belongsToMany(UsulanRule, { through: UsulanRuleGejala, foreignKey: 'gejalaId', otherKey: 'usulanRuleId' });
-
-// Pengusul dan validator (dokter). Jika akunnya dihapus, usulan tetap ada.
-for (const Usulan of [UsulanPenyakit, UsulanGejala, UsulanRule]) {
-  User.hasMany(Usulan, { foreignKey: 'diajukanOleh', as: `${Usulan.name}_diajukan`, onDelete: 'SET NULL' });
-  Usulan.belongsTo(User, { foreignKey: 'diajukanOleh', as: 'pengusul' });
-  User.hasMany(Usulan, { foreignKey: 'divalidasiOleh', as: `${Usulan.name}_divalidasi`, onDelete: 'SET NULL' });
-  Usulan.belongsTo(User, { foreignKey: 'divalidasiOleh', as: 'validator' });
-}
 
 // Menghapus akun pasien ikut menghapus riwayat diagnosanya
 User.hasMany(Riwayat, { foreignKey: { name: 'userId', allowNull: false }, onDelete: 'CASCADE' });
@@ -223,10 +216,18 @@ RiwayatPenyakit.belongsTo(Riwayat, { foreignKey: { name: 'riwayatId', allowNull:
 Penyakit.hasMany(RiwayatPenyakit, { foreignKey: { name: 'penyakitId', allowNull: false }, onDelete: 'RESTRICT' });
 RiwayatPenyakit.belongsTo(Penyakit, { foreignKey: { name: 'penyakitId', allowNull: false } });
 
+RiwayatPenyakit.hasMany(RiwayatLangkah, { as: 'langkah', foreignKey: { name: 'riwayatPenyakitId', allowNull: false }, onDelete: 'CASCADE' });
+RiwayatLangkah.belongsTo(RiwayatPenyakit, { foreignKey: { name: 'riwayatPenyakitId', allowNull: false } });
+
+Riwayat.hasMany(RiwayatJejak, { as: 'jejak', foreignKey: { name: 'riwayatId', allowNull: false }, onDelete: 'CASCADE' });
+RiwayatJejak.belongsTo(Riwayat, { foreignKey: { name: 'riwayatId', allowNull: false } });
+RiwayatJejak.hasMany(RiwayatJejakPremis, { as: 'premis', foreignKey: { name: 'riwayatJejakId', allowNull: false }, onDelete: 'CASCADE' });
+RiwayatJejakPremis.belongsTo(RiwayatJejak, { foreignKey: { name: 'riwayatJejakId', allowNull: false } });
+
 // Opsi query untuk memuat riwayat beserta pasien, gejala, dan penyakitnya
 const detailRiwayat = {
   include: [
-    { model: User, attributes: ['id', 'nama', 'jenisKelamin', 'tanggalLahir'] },
+    { model: User, attributes: ['id', 'nama', 'kodePasien', 'jenisKelamin', 'tanggalLahir'] },
     { model: RiwayatGejala, as: 'daftarGejala', include: [Gejala] },
     { model: RiwayatPenyakit, as: 'daftarPenyakit', include: [Penyakit] },
   ],
@@ -236,6 +237,27 @@ const detailRiwayat = {
     // Urutan simpan (id) menjaga aturan pemecah nilai CF yang sama
     [{ model: RiwayatPenyakit, as: 'daftarPenyakit' }, 'cf', 'DESC'],
     [{ model: RiwayatPenyakit, as: 'daftarPenyakit' }, 'id', 'ASC'],
+  ],
+};
+
+// Seperti detailRiwayat, ditambah langkah perhitungan CF dan jejak penalaran
+// (untuk halaman hasil satu riwayat)
+const rincianRiwayat = {
+  include: [
+    detailRiwayat.include[0],
+    detailRiwayat.include[1],
+    {
+      model: RiwayatPenyakit,
+      as: 'daftarPenyakit',
+      include: [Penyakit, { model: RiwayatLangkah, as: 'langkah' }],
+    },
+    { model: RiwayatJejak, as: 'jejak', include: [{ model: RiwayatJejakPremis, as: 'premis' }] },
+  ],
+  order: [
+    ...detailRiwayat.order,
+    [{ model: RiwayatPenyakit, as: 'daftarPenyakit' }, { model: RiwayatLangkah, as: 'langkah' }, 'urutan', 'ASC'],
+    [{ model: RiwayatJejak, as: 'jejak' }, 'urutan', 'ASC'],
+    [{ model: RiwayatJejak, as: 'jejak' }, { model: RiwayatJejakPremis, as: 'premis' }, 'urutan', 'ASC'],
   ],
 };
 
@@ -249,11 +271,10 @@ module.exports = {
   Riwayat,
   RiwayatGejala,
   RiwayatPenyakit,
-  UsulanPenyakit,
-  UsulanPenyakitGejala,
-  UsulanGejala,
-  UsulanRule,
-  UsulanRuleGejala,
+  RiwayatLangkah,
+  RiwayatJejak,
+  RiwayatJejakPremis,
   detailRiwayat,
+  rincianRiwayat,
   hitungUmur,
 };

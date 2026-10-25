@@ -15,7 +15,6 @@
   </div>
 </div>
 
-<%- include('../../partials/info-usulan') %>
 
 <% if (pesanError) { %>
   <div class="alert alert-danger d-flex gap-2 align-items-center small">
@@ -34,7 +33,8 @@
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label" for="kode">Kode</label>
-              <input class="form-control font-monospace" id="kode" name="kode" value="<%= item.kode || '' %>" placeholder="P09" maxlength="10" required>
+              <input class="form-control font-monospace" id="kode" value="<%= item.kode %>" readonly aria-describedby="kodeHint">
+              <div class="form-hint" id="kodeHint"><%= item.id ? 'Tidak dapat diubah.' : 'Dibuat otomatis saat disimpan.' %></div>
             </div>
             <div class="col-md-9">
               <label class="form-label" for="nama">Nama penyakit</label>
@@ -87,7 +87,7 @@
 
             <hr class="my-4">
             <h6 class="fw-bold mb-1">Gejala baru</h6>
-            <p class="small text-muted">Tambahkan gejala yang belum ada di daftar. Kodenya dibuat otomatis saat disimpan<%= isKetua ? '' : ' / disetujui' %>.</p>
+            <p class="small text-muted">Tambahkan gejala yang belum ada di daftar. Kodenya dibuat otomatis saat disimpan.</p>
             <div id="gejalaBaru">
               <% item.gejalaBaru.forEach(g => { %>
                 <div class="row g-2 align-items-center mb-2" data-baris>
@@ -117,7 +117,7 @@
     <div class="<%= paket ? 'col-12' : 'col-xl-9' %>">
       <div class="d-flex gap-2 justify-content-end">
         <a href="/dokter/penyakit" class="btn btn-ghost">Batal</a>
-        <button class="btn btn-primary" type="submit"><i class="bi <%= isKetua ? 'bi-check-lg' : 'bi-send' %>"></i> <%= isKetua ? 'Simpan' : 'Kirim Usulan' %></button>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg"></i> Simpan</button>
       </div>
     </div>
   </div>
